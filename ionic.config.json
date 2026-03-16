@@ -1,0 +1,7 @@
+{
+  "name": "krama-front",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
