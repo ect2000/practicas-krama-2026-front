@@ -11,6 +11,26 @@ export const routes: Routes = [
     path: 'inicio',
     loadComponent: () => import('./inicio/inicio.page').then( m => m.InicioPage)
   },
+  {
+    path: 'login',
+    loadComponent: () => import('./login/login.page').then( m => m.LoginPage)
+  },
+  {
+    path: 'estimaciones',
+    loadComponent: () => import('./estimaciones/estimaciones.page').then( m => m.EstimacionesPage)
+  },
+  {
+    path: 'proyecto-detalle',
+    loadComponent: () => import('./proyecto-detalle/proyecto-detalle.page').then( m => m.ProyectoDetallePage)
+  },
+  {
+    path: 'imputar',
+    loadComponent: () => import('./imputar/imputar.page').then( m => m.ImputarPage)
+  },
+  {
+    path: 'acerca',
+    loadComponent: () => import('./acerca/acerca.page').then( m => m.AcercaPage)
+  },
   // Aquí, al usar el comando de Ionic para crear páginas,
   // añadirá automáticamente las nuevas rutas para 'inicio', 'perfil' y 'configuracion'.
 ];
