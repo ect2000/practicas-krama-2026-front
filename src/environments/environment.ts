@@ -3,7 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiUrl: 'http://localhost:8080' // <-- Añade esta línea (Ajusta el puerto 8080 si tu back usa otro)
 };
 
 /*
