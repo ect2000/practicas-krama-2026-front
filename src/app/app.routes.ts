@@ -4,7 +4,7 @@ export const routes: Routes = [
   {
     // Cuando el usuario entra a la app sin ninguna ruta (ej. localhost:8100)
     path: '',
-    redirectTo: 'inicio', // Lo redirigimos automáticamente a nuestra página de Inicio
+    redirectTo: 'login', // Lo redirigimos automáticamente a nuestra página de Inicio
     pathMatch: 'full',
   },
   {
@@ -20,10 +20,6 @@ export const routes: Routes = [
     loadComponent: () => import('./estimaciones/estimaciones.page').then( m => m.EstimacionesPage)
   },
   {
-    path: 'proyecto-detalle',
-    loadComponent: () => import('./proyecto-detalle/proyecto-detalle.page').then( m => m.ProyectoDetallePage)
-  },
-  {
     path: 'imputar',
     loadComponent: () => import('./imputar/imputar.page').then( m => m.ImputarPage)
   },
@@ -31,6 +27,37 @@ export const routes: Routes = [
     path: 'acerca',
     loadComponent: () => import('./acerca/acerca.page').then( m => m.AcercaPage)
   },
+  {
+    path: 'perfil',
+    loadComponent: () => import('./perfil/perfil.page').then( m => m.PerfilPage)
+  },
+  {
+    path: 'proyectos',
+    loadComponent: () => import('./proyectos/proyectos.page').then( m => m.ProyectosPage)
+  },
+  {
+    path: 'ajustes',
+    loadComponent: () => import('./ajustes/ajustes.page').then( m => m.AjustesPage)
+  },
+  {
+    path: 'notificaciones',
+    loadComponent: () => import('./notificaciones/notificaciones.page').then( m => m.NotificacionesPage)
+  },
+  {
+    path: 'informes',
+    loadComponent: () => import('./informes/informes.page').then( m => m.InformesPage)
+  },
+  {
+    path: 'clientes',
+    loadComponent: () => import('./clientes/clientes.page').then( m => m.ClientesPage)
+  },
+  {
+    path: 'usuarios',
+    loadComponent: () => import('./usuarios/usuarios.page').then( m => m.UsuariosPage)
+  },
+
+  
+
   // Aquí, al usar el comando de Ionic para crear páginas,
   // añadirá automáticamente las nuevas rutas para 'inicio', 'perfil' y 'configuracion'.
 ];
