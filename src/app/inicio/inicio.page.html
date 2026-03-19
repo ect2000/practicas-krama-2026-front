@@ -1,16 +1,74 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Menu Inicio</ion-title>
+    <ion-title class="font-bold tracking-wide">Imputar</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Menu Inicio</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="bg-gray-50">
+  <div class="max-w-6xl mx-auto p-4 md:p-6">
+
+    <div class="flex flex-col xl:flex-row justify-between items-center bg-white p-3 rounded-2xl shadow-sm border border-gray-100 mb-6 gap-4">
+      
+      <ion-segment [(ngModel)]="vistaActual" class="w-full xl:w-auto bg-gray-100 rounded-xl p-1">
+        <ion-segment-button value="dia" class="rounded-lg">
+          <ion-label class="font-bold">Día</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="semana" class="rounded-lg">
+          <ion-label class="font-bold">Semana</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="mes" class="rounded-lg">
+          <ion-label class="font-bold">Mes</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <div class="flex items-center justify-between w-full xl:w-auto px-4">
+        <ion-button fill="clear" color="medium" class="m-0 h-12 w-12 bg-gray-50 rounded-full hover:bg-gray-200">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </ion-button>
+        
+        <div class="flex items-center gap-2 text-gray-800 font-extrabold text-lg min-w-[200px] justify-center">
+          <ion-icon name="calendar-clear-outline" class="text-blue-600"></ion-icon>
+          <span>{{ fechaActual }}</span>
+        </div>
+
+        <ion-button fill="clear" color="medium" class="m-0 h-12 w-12 bg-gray-50 rounded-full hover:bg-gray-200">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
+    <div class="flex justify-end mb-4">
+      <ion-button shape="round" color="primary" class="font-bold shadow-lg h-12 px-4">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
+        Vincular Proyecto
+      </ion-button>
+    </div>
+
+    <div *ngIf="vistaActual === 'dia'" class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+      
+      <div class="hidden md:grid grid-cols-12 gap-4 bg-gray-50 p-5 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs tracking-wider">
+        <div class="col-span-4">Proyecto</div>
+        <div class="col-span-2 text-center">Horas</div>
+        <div class="col-span-5">Comentarios</div>
+        <div class="col-span-1 text-center"></div>
+      </div>
+
+      <div *ngIf="proyectosVinculados.length === 0" class="flex flex-col items-center justify-center p-16 text-center">
+        <ion-icon name="folder-open-outline" class="text-7xl text-gray-300 mb-4"></ion-icon>
+        <h3 class="text-2xl font-bold text-gray-700">No hay proyectos vinculados</h3>
+        <p class="text-gray-500 mt-2 text-lg">Haz clic en "Vincular Proyecto" para empezar a registrar tus horas del día.</p>
+      </div>
+
+    </div>
+
+    <div *ngIf="vistaActual !== 'dia'" class="bg-white rounded-3xl shadow-xl border border-gray-100 p-16 text-center mt-6">
+      <ion-icon name="calendar-clear-outline" class="text-7xl text-gray-300 mb-4"></ion-icon>
+      <h2 class="text-3xl font-bold text-gray-800">Vista de {{ vistaActual | titlecase }}</h2>
+      <p class="text-gray-500 mt-2 text-lg">Próximamente construiremos esta sección.</p>
+    </div>
+
+  </div>
 </ion-content>

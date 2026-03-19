@@ -1,25 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonItem,IonInput,MenuController } from '@ionic/angular/standalone';
-import { Router} from '@angular/router';
+import { Router } from '@angular/router';
+
+// Importamos todos los componentes nativos de Ionic que vamos a usar
+import { IonContent, IonButton, IonInput, MenuController, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon } from '@ionic/angular/standalone';
+
+// Importamos la herramienta para usar los iconos oficiales de Ionic
+import { addIcons } from 'ionicons';
+import { personOutline, lockClosedOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonItem, IonInput]
+  imports: [IonContent, CommonModule, FormsModule, IonButton,  IonInput, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon]
 })
 export class LoginPage implements OnInit {
 
   usuario: string = '';
   contrasena: string = '';
 
-
   constructor(
     private router: Router,
-    private menuCtrl: MenuController) { }
+    private menuCtrl: MenuController) { 
+      // Registramos los iconos que usaremos en los inputs
+      addIcons({ personOutline, lockClosedOutline });
+    }
 
   ngOnInit() { }
 
@@ -32,21 +40,19 @@ export class LoginPage implements OnInit {
   }
 
   inciarSesion(){
-
     if (this.usuario === '' || this.contrasena === '') {
-      // Aquí puedes redirigir al usuario a la página de inicio o a otra página protegida
-      alert('Porfavor, rellene los cmapos de usuario y contraseña');
+      alert('Por favor, rellene los campos de usuario y contraseña');
       return;
     }
 
-    let rolAsignado = 'usuario'; // Aquí puedes asignar el rol que corresponda al usuario
+    let rolAsignado = 'usuario'; 
     if (this.usuario.toLowerCase() === 'admin') {
       rolAsignado = 'administrador';
     }
-    localStorage.setItem('rol', rolAsignado); // Guardamos el rol en el almacenamiento local
+    localStorage.setItem('rol', rolAsignado); 
 
     console.log('Inicio de sesión exitoso. Rol asignado: ' , rolAsignado);
 
-    this.router.navigate(['/inicio']); // Redirige a la página de inicio después del inicio de sesión exitoso
+    this.router.navigate(['/inicio']); 
   }
 }

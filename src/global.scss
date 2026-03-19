@@ -1,3 +1,10 @@
+@import "tailwindcss";
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+/* Devolver el espacio a los iconos del menú de Ionic que Tailwind borró */
+ion-item ion-icon[slot="start"] {
+  margin-right: 16px !important;
+}
+
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------

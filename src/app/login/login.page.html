@@ -1,17 +1,52 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Inicio de Sesion</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-900 p-4">
 
-<ion-content [fullscreen]="true">
-  <ion-item>
-    <ion-input [(ngModel)]="usuario" placeholder="Correo Electronico" type="email"></ion-input> 
-  </ion-item>
-  <ion-item>
-    <ion-input [(ngModel)]="contrasena" placeholder="Contraseña" type="password"></ion-input>
-  </ion-item>
-  <ion-button (click)="inciarSesion()" expand="medium" color="primary" >
-    Iniciar Sesion
-  </ion-button>
+    <ion-card class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-2 md:p-4 m-0">
+
+      <ion-card-header class="text-center mb-2">
+        <ion-card-title class="text-3xl font-extrabold text-gray-800 tracking-wide mt-4">Krama e-soft</ion-card-title>
+        <ion-card-subtitle class="text-gray-500 text-base mt-2">Inicia sesión</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="flex flex-col gap-5 mt-2">
+          
+          <div class="bg-gray-50 rounded-2xl border border-gray-200 px-4 py-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all">
+            <ion-input
+              label="Usuario"
+              labelPlacement="floating"
+              placeholder="Ej. admin"
+              [(ngModel)]="usuario"
+              class="text-gray-800 font-medium">
+              <ion-icon slot="start" name="person-outline" class="text-gray-400 mr-2 mt-2"></ion-icon>
+            </ion-input>
+          </div>
+
+          <div class="bg-gray-50 rounded-2xl border border-gray-200 px-4 py-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all">
+            <ion-input
+              type="password"
+              label="Contraseña"
+              labelPlacement="floating"
+              placeholder="Tu contraseña secreta"
+              [(ngModel)]="contrasena"
+              class="text-gray-800 font-medium">
+              <ion-icon slot="start" name="lock-closed-outline" class="text-gray-400 mr-2 mt-2"></ion-icon>
+            </ion-input>
+          </div>
+
+          <ion-button
+            expand="block"
+            shape="round"
+            class="mt-6 mb-4 h-14 text-lg font-bold shadow-lg"
+            color="primary"
+            (click)="inciarSesion()">
+            Entrar al Sistema
+          </ion-button>
+          
+        </div>
+      </ion-card-content>
+
+    </ion-card>
+
+  </div>
 </ion-content>
