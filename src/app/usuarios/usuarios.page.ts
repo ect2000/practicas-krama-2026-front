@@ -11,7 +11,6 @@ import {
 import { addIcons } from 'ionicons';
 import { addOutline, peopleOutline, closeOutline, saveOutline, pencilOutline } from 'ionicons/icons';
 
-// Importamos los servicios necesarios
 import { UsuarioService } from '../services/usuario.service';
 import { ClienteService, Cliente } from '../services/cliente.service';
 import { ProyectoService, Proyecto } from '../services/proyecto.service';
@@ -28,21 +27,15 @@ import { ProyectoService, Proyecto } from '../services/proyecto.service';
   ]
 })
 export class UsuariosPage implements OnInit {
-
-  // Listas de datos
   usuarios: any[] = []; 
   clientes: Cliente[] = [];
   proyectos: Proyecto[] = [];
-  proyectosVisibles: Proyecto[] = []; // Proyectos que se mostrarán en el desplegable
+  proyectosVisibles: Proyecto[] = [];
 
-  // Control del formulario
   mostrandoFormulario = false;
-  editando = false; // Nos dirá si estamos creando o editando
-
-  // Objeto donde guardaremos los datos del formulario
+  editando = false;
   usuarioForm: any = this.resetearFormulario();
 
-  // Inyección de dependencias
   private usuarioService = inject(UsuarioService);
   private clienteService = inject(ClienteService);
   private proyectoService = inject(ProyectoService);
@@ -57,33 +50,17 @@ export class UsuariosPage implements OnInit {
     this.obtenerProyectos();
   }
 
-  // --- OBTENCIÓN DE DATOS ---
-
   obtenerUsuarios() {
-    this.usuarioService.obtenerUsuarios().subscribe({
-      next: (datos) => this.usuarios = datos,
-      error: (err) => console.error('Error al cargar usuarios:', err)
-    });
+    this.usuarioService.obtenerUsuarios().subscribe({ next: (d) => this.usuarios = d });
   }
-
   obtenerClientes() {
-    this.clienteService.obtenerClientes().subscribe({
-      next: (datos) => this.clientes = datos,
-      error: (err) => console.error('Error al cargar clientes:', err)
-    });
+    this.clienteService.obtenerClientes().subscribe({ next: (d) => this.clientes = d });
   }
-
   obtenerProyectos() {
-    this.proyectoService.obtenerProyectos().subscribe({
-      next: (datos) => {
-        this.proyectos = datos;
-        this.proyectosVisibles = datos; // Por defecto mostramos todos
-      },
-      error: (err) => console.error('Error al cargar proyectos:', err)
+    this.proyectoService.obtenerProyectos().subscribe({ 
+      next: (d) => { this.proyectos = d; this.proyectosVisibles = d; }
     });
   }
-
-  // --- LÓGICA DEL FORMULARIO ---
 
   abrirFormularioCrear() {
     this.usuarioForm = this.resetearFormulario();
@@ -93,11 +70,14 @@ export class UsuariosPage implements OnInit {
   }
 
   abrirFormularioEditar(usuario: any) {
-    // Clonamos los datos del usuario para no modificar la lista directamente hasta guardar
-    this.usuarioForm = { ...usuario };
+    // Si tu backend funciona igual que en Proyectos, aquí mapeamos clientes y proyectos
+    const clientesIds = usuario.clientes ? usuario.clientes.map((c: any) => c.id) : [];
+    const proyectosIds = usuario.proyectos ? usuario.proyectos.map((p: any) => p.id) : [];
+
+    this.usuarioForm = { ...usuario, clientesIds, proyectosIds };
     this.editando = true;
     this.mostrandoFormulario = true;
-    this.alCambiarClientes(); // Filtramos los proyectos al editar según sus clientes
+    this.alCambiarClientes();
   }
 
   cerrarFormulario() {
@@ -105,32 +85,18 @@ export class UsuariosPage implements OnInit {
   }
 
   resetearFormulario() {
-    return {
-      nombre: '',
-      apellidos: '',
-      email: '',
-      telefono: '',
-      permisos: '',
-      clientesIds: [],
-      proyectosIds: []
-    };
+    return { nombre: '', apellidos: '', email: '', telefono: '', permisos: '', clientesIds: [], proyectosIds: [] };
   }
 
-  // Esta función se ejecuta cada vez que el usuario selecciona o quita un cliente
   alCambiarClientes() {
     const clientesSeleccionados = this.usuarioForm.clientesIds || [];
-
-    // Si no hay clientes seleccionados, mostramos todos los proyectos
     if (clientesSeleccionados.length === 0) {
       this.proyectosVisibles = [...this.proyectos];
     } else {
-      // Filtramos proyectos que pertenezcan a los clientes seleccionados
       this.proyectosVisibles = this.proyectos.filter(proyecto => 
         proyecto.cliente && clientesSeleccionados.includes(proyecto.cliente.id)
       );
     }
-
-    // Limpiamos los proyectos que estaban seleccionados pero ya no son visibles
     if (this.usuarioForm.proyectosIds) {
       this.usuarioForm.proyectosIds = this.usuarioForm.proyectosIds.filter((id: number) => 
         this.proyectosVisibles.some(pv => pv.id === id)
@@ -139,21 +105,43 @@ export class UsuariosPage implements OnInit {
   }
 
   guardarUsuario() {
+    // 1. Construimos el objeto EXACTO que espera el backend, 
+    // sin enviar variables extra que el servidor no entienda.
+    const datosParaAPI = {
+      id: this.usuarioForm.id,
+      nombre: this.usuarioForm.nombre,
+      apellidos: this.usuarioForm.apellidos,
+      email: this.usuarioForm.email,
+      telefono: this.usuarioForm.telefono,
+      permisos: this.usuarioForm.permisos,
+      
+      // 2. Añadimos un "|| []" de seguridad por si el usuario no selecciona nada, 
+      // evitando que la función .map() rompa la página.
+      clientes: (this.usuarioForm.clientesIds || []).map((id: number) => ({ id: id })),
+      proyectos: (this.usuarioForm.proyectosIds || []).map((id: number) => ({ id: id }))
+    };
+
     if (this.editando) {
-      this.usuarioService.actualizarUsuario(this.usuarioForm.id, this.usuarioForm).subscribe({
-        next: () => {
-          this.obtenerUsuarios(); // Recargamos la lista
-          this.cerrarFormulario();
+      this.usuarioService.actualizarUsuario(datosParaAPI.id, datosParaAPI).subscribe({
+        next: () => { 
+          this.obtenerUsuarios(); 
+          this.cerrarFormulario(); 
         },
-        error: (err) => console.error('Error al actualizar:', err)
+        error: (err) => {
+          console.error('Error del servidor al actualizar:', err);
+          alert('No se pudo actualizar el usuario. Abre la consola (F12) para ver el error del servidor.');
+        }
       });
     } else {
-      this.usuarioService.crearUsuario(this.usuarioForm).subscribe({
-        next: () => {
-          this.obtenerUsuarios();
-          this.cerrarFormulario();
+      this.usuarioService.crearUsuario(datosParaAPI).subscribe({
+        next: () => { 
+          this.obtenerUsuarios(); 
+          this.cerrarFormulario(); 
         },
-        error: (err) => console.error('Error al crear:', err)
+        error: (err) => {
+          console.error('Error del servidor al crear:', err);
+          alert('No se pudo guardar el usuario. Abre la consola (F12) para ver el error del servidor.');
+        }
       });
     }
   }

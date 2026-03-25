@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment'; 
 import { Observable } from 'rxjs';
 
-// Definimos la estructura de datos para el Proyecto
 export interface Proyecto {
   id?: number;
   nombre: string;
@@ -27,12 +26,10 @@ export class ProyectoService {
     return this.http.get<Proyecto[]>(this.apiUrl);
   }
 
-  // Función POST para crear un nuevo proyecto
   crearProyecto(nuevoProyecto: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, nuevoProyecto);
   }
 
-  // Función PUT que envía el proyecto modificado al backend
   actualizarProyecto(id: number, proyectoActualizado: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}`, proyectoActualizado);
   }

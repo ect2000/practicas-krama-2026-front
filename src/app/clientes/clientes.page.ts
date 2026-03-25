@@ -1,48 +1,87 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// 1. Importamos todos los componentes de Ionic que necesitamos
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonButton, IonIcon } from '@ionic/angular/standalone';
+import { 
+  IonContent, IonHeader, IonTitle, IonToolbar, IonMenuButton, 
+  IonButtons, IonButton, IonIcon, IonItem, IonInput, 
+  IonList, IonTextarea
+} from '@ionic/angular/standalone'; 
 
-// 2. Importamos las herramientas de iconos (usaremos el icono de un edificio/negocio)
 import { addIcons } from 'ionicons';
-import { addOutline, businessOutline } from 'ionicons/icons';
-
-// 3. Importamos tu servicio de clientes (Asegúrate de que la ruta es correcta)
-import { ClienteService } from '../services/cliente.service';
+import { addOutline, businessOutline, closeOutline, saveOutline, pencilOutline } from 'ionicons/icons';
+import { ClienteService, Cliente } from '../services/cliente.service';
 
 @Component({
   selector: 'app-clientes',
   templateUrl: './clientes.page.html',
   styleUrls: ['./clientes.page.scss'],
   standalone: true,
-  // Declaramos los componentes para que el HTML funcione sin errores
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, IonButton, IonIcon]
+  imports: [
+    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, 
+    IonButtons, IonMenuButton, IonButton, IonIcon, IonItem, 
+    IonInput, IonList, IonTextarea
+  ]
 })
 export class ClientesPage implements OnInit {
+  clientes: Cliente[] = [];
+  mostrandoFormulario = false;
+  editando = false;
+  clienteForm: Cliente = this.resetearFormulario();
 
-  listaClientes: any[] = [];
+  private clienteService = inject(ClienteService);
 
-  constructor(private clienteService: ClienteService) { 
-    // Registramos los iconos de "Añadir" y de "Negocio/Edificio"
-    addIcons({ addOutline, businessOutline });
+  constructor() { 
+    addIcons({ addOutline, businessOutline, closeOutline, saveOutline, pencilOutline });
   }
 
   ngOnInit() {
-    this.cargarDatos();
+    this.obtenerClientes();
   }
 
-  cargarDatos() {
-    // Llamamos a tu servicio para obtener los clientes
-    // Nota: Si el método de tu servicio se llama distinto a "obtenerClientes()", cámbialo aquí
+  obtenerClientes() {
     this.clienteService.obtenerClientes().subscribe({
-      next: (datos) => {
-        console.log('¡Éxito! Clientes recibidos:', datos);
-        this.listaClientes = datos; 
-      },
-      error: (error) => {
-        console.error('Error al traer los Clientes:', error);
-      }
+      next: (datos) => this.clientes = datos,
+      error: (err) => console.error('Error al cargar clientes:', err)
     });
+  }
+
+  abrirFormularioCrear() {
+    this.clienteForm = this.resetearFormulario();
+    this.editando = false;
+    this.mostrandoFormulario = true;
+  }
+
+  abrirFormularioEditar(cliente: Cliente) {
+    this.clienteForm = { ...cliente };
+    this.editando = true;
+    this.mostrandoFormulario = true;
+  }
+
+  cerrarFormulario() {
+    this.mostrandoFormulario = false;
+  }
+
+  resetearFormulario(): Cliente {
+    return { nombre: '', codigo: '', descripcion: '' };
+  }
+
+  guardarCliente() {
+    if (this.editando && this.clienteForm.id) {
+      this.clienteService.actualizarCliente(this.clienteForm.id, this.clienteForm).subscribe({
+        next: () => {
+          this.obtenerClientes();
+          this.cerrarFormulario();
+        },
+        error: (err) => console.error('Error al actualizar cliente:', err)
+      });
+    } else {
+      this.clienteService.crearCliente(this.clienteForm).subscribe({
+        next: () => {
+          this.obtenerClientes();
+          this.cerrarFormulario();
+        },
+        error: (err) => console.error('Error al crear cliente:', err)
+      });
+    }
   }
 }

@@ -15,8 +15,7 @@
     @if (!mostrandoFormulario) {
       <div class="flex justify-end mb-4">
         <ion-button shape="round" color="primary" class="font-bold shadow-lg h-12 px-4" (click)="abrirFormularioCrear()">
-          <ion-icon slot="start" name="add-outline"></ion-icon>
-          Añadir Proyecto
+          <ion-icon slot="start" name="add-outline"></ion-icon> Añadir Proyecto
         </ion-button>
       </div>
 
@@ -32,8 +31,8 @@
           @for (proyecto of proyectos; track proyecto.id) {
             <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center">
               <div class="col-span-1 md:col-span-3 text-indigo-600 font-bold font-mono">
-                <span class="md:hidden font-normal text-gray-400">Código:</span>
-                {{ proyecto.codigo || 'S/C' }}
+                <span class="md:hidden font-normal text-gray-400">Código (ID):</span>
+                #{{ proyecto.id }}
               </div>
               <div class="col-span-1 md:col-span-4 font-bold text-gray-800 text-lg md:text-base">
                 {{ proyecto.nombre }}
@@ -52,7 +51,6 @@
             <div class="flex flex-col items-center justify-center p-16 text-center">
               <ion-icon name="folder-outline" class="text-7xl text-gray-300 mb-4"></ion-icon>
               <h3 class="text-2xl font-bold text-gray-700">No hay proyectos</h3>
-              <p class="text-gray-500 mt-2 text-lg">Crea tu primer proyecto para empezar a trabajar.</p>
             </div>
           }
         </div>
@@ -63,16 +61,23 @@
       <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6">
         <ion-list class="bg-transparent">
           
-          <ion-item class="mb-2 border rounded-xl bg-gray-50">
-            <ion-input label="Nombre del Proyecto" labelPlacement="floating" type="text" [(ngModel)]="proyectoForm.nombre" placeholder="Ej. Desarrollo Web Krama"></ion-input>
+          <ion-item class="mb-2 border rounded-xl bg-gray-50 opacity-80">
+            <ion-input 
+              label="Código (ID)" 
+              labelPlacement="floating" 
+              type="text" 
+              [value]="editando ? proyectoForm.id : 'Se generará al guardar'" 
+              [readonly]="true"
+              class="text-gray-500 font-bold">
+            </ion-input>
           </ion-item>
 
           <ion-item class="mb-2 border rounded-xl bg-gray-50">
-            <ion-input label="Código del Proyecto" labelPlacement="floating" type="text" [(ngModel)]="proyectoForm.codigo" placeholder="Ej. PRJ-2026-001"></ion-input>
+            <ion-input label="Nombre del Proyecto" labelPlacement="floating" type="text" [(ngModel)]="proyectoForm.nombre"></ion-input>
           </ion-item>
 
           <ion-item class="mb-2 border rounded-xl bg-gray-50">
-            <ion-textarea label="Descripción" labelPlacement="floating" [(ngModel)]="proyectoForm.descripcion" rows="3" placeholder="Breve descripción del proyecto..."></ion-textarea>
+            <ion-textarea label="Descripción" labelPlacement="floating" [(ngModel)]="proyectoForm.descripcion" rows="3"></ion-textarea>
           </ion-item>
 
           <ion-item class="mb-2 border rounded-xl bg-gray-50">
@@ -103,7 +108,6 @@
             <ion-icon slot="start" name="save-outline"></ion-icon> Guardar
           </ion-button>
         </div>
-
       </div>
     }
 
