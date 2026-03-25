@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -9,31 +9,47 @@
 
 <ion-content class="ion-padding">
 
-  <ion-list>
+  <ion-card class="m-0 md:p-2 rounded-3xl shadow-xl">
     
-    <ion-list-header>
-      <ion-label color="primary">Apariencia</ion-label>
-    </ion-list-header>
+    <ion-card-header class="text-center pt-6">
+      <ion-card-title class="text-3xl font-extrabold tracking-tight">Configuración</ion-card-title>
+      <ion-card-subtitle class="mt-2 text-base">Personaliza tu experiencia de usuario</ion-card-subtitle>
+    </ion-card-header>
 
-    <ion-item>
-      <ion-label>
-        <h2>Modo Oscuro</h2>
-        <p>Cambia los colores de la aplicación</p>
-      </ion-label>
-      <ion-toggle slot="end" [(ngModel)]="modoOscuro" (ionChange)="cambiarTema()"></ion-toggle>
-    </ion-item>
+    <ion-card-content class="px-2 pt-4 pb-6">
+      <ion-list lines="none" class="bg-transparent">
+        
+        <ion-item-group class="mt-2">
+          <ion-item-divider class="bg-transparent mb-1">
+            <ion-label color="primary" class="font-bold text-base tracking-wider">APARIENCIA</ion-label>
+          </ion-item-divider>
 
-    <ion-list-header style="margin-top: 20px;">
-      <ion-label color="primary">Seguridad</ion-label>
-    </ion-list-header>
+          <ion-item class="rounded-xl transition-all mb-2">
+            <ion-icon slot="start" name="moon-outline" class="mr-2 text-xl" color="primary"></ion-icon>
+            <ion-label>
+              <h2 class="font-semibold">Modo Oscuro</h2>
+              <p class="text-sm">Alternar tema visual de la app</p>
+            </ion-label>
+            <ion-toggle slot="end" [(ngModel)]="modoOscuro" (ionChange)="cambiarTema()" color="primary"></ion-toggle>
+          </ion-item>
+        </ion-item-group>
 
-    <ion-item button routerLink="/cambiar-password">
-      <ion-label>
-        <h2>Cambiar contraseña</h2>
-        <p>Actualiza tus credenciales de acceso</p>
-      </ion-label>
-    </ion-item>
+        <ion-item-group class="mt-6">
+          <ion-item-divider class="bg-transparent mb-1">
+            <ion-label color="primary" class="font-bold text-base tracking-wider">SEGURIDAD</ion-label>
+          </ion-item-divider>
 
-  </ion-list>
+          <ion-item button routerLink="/cambiar-password" class="rounded-xl transition-all mb-2" detail="true">
+            <ion-icon slot="start" name="shield-checkmark-outline" class="mr-2 text-xl" color="primary"></ion-icon>
+            <ion-label>
+              <h2 class="font-semibold">Cambiar contraseña</h2>
+              <p class="text-sm">Actualizar credenciales de acceso</p>
+            </ion-label>
+          </ion-item>
+        </ion-item-group>
+
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>

@@ -1,17 +1,30 @@
+// src/app/ajustes/ajustes.page.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// Importamos las piezas visuales necesarias
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonList, IonListHeader, IonItem, IonLabel, IonToggle } from '@ionic/angular/standalone';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router'; // Asegura RouterModule
+
+//
+import { 
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, 
+  IonList, IonItem, IonLabel, IonToggle, 
+  IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon, 
+  IonItemGroup, IonItemDivider 
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-ajustes',
   templateUrl: './ajustes.page.html',
   styleUrls: ['./ajustes.page.scss'],
   standalone: true,
-  // 2. AÑADIMOS RouterModule AL FINAL DE ESTA LISTA
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, IonList, IonListHeader, IonItem, IonLabel, IonToggle, RouterModule]
+  //
+  imports: [
+    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, 
+    IonList, IonItem, IonLabel, IonToggle, RouterModule,
+    IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon,
+    IonItemGroup, IonItemDivider
+  ]
 })
 export class AjustesPage implements OnInit {
 
