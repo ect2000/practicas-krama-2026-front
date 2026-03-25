@@ -3,61 +3,109 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title class="font-bold tracking-wide">Proyectos</ion-title>
+    <ion-title class="font-bold tracking-wide">
+      {{ mostrandoFormulario ? (editando ? 'Editar Proyecto' : 'Nuevo Proyecto') : 'Proyectos' }}
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="bg-gray-50">
   <div class="max-w-6xl mx-auto p-4 md:p-6">
 
-    <div class="flex justify-end mb-4">
-      <ion-button shape="round" color="primary" class="font-bold shadow-lg h-12 px-4">
-        <ion-icon slot="start" name="add-outline"></ion-icon>
-        Nuevo Proyecto
-      </ion-button>
-    </div>
-
-    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-      
-      <div class="hidden md:grid grid-cols-12 gap-4 bg-gray-50 p-5 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs tracking-wider">
-        <div class="col-span-4">Proyecto</div>
-        <div class="col-span-4">Cliente</div>
-        <div class="col-span-2 text-center">Presupuesto</div>
-        <div class="col-span-2 text-center">Horas</div>
+    @if (!mostrandoFormulario) {
+      <div class="flex justify-end mb-4">
+        <ion-button shape="round" color="primary" class="font-bold shadow-lg h-12 px-4" (click)="abrirFormularioCrear()">
+          <ion-icon slot="start" name="add-outline"></ion-icon>
+          Añadir Proyecto
+        </ion-button>
       </div>
 
-      <div class="flex flex-col">
-        <div *ngFor="let proyecto of listaProyectos" class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center">
-          
-          <div class="col-span-1 md:col-span-4 font-bold text-gray-800 text-lg md:text-base">
-            {{ proyecto.nombre }}
-          </div>
-          
-          <div class="col-span-1 md:col-span-4 text-gray-600">
-            <span class="md:hidden font-bold mr-1 text-gray-400">Cliente:</span>
-            {{ proyecto.cliente ? proyecto.cliente.nombre : 'Sin asignar' }}
-          </div>
-          
-          <div class="col-span-1 md:col-span-2 md:text-center text-blue-600 font-bold">
-            <span class="md:hidden font-normal mr-1 text-gray-400">Presupuesto:</span>
-            {{ proyecto.costeTotal }}€
-          </div>
-          
-          <div class="col-span-1 md:col-span-2 md:text-center text-green-600 font-bold">
-            <span class="md:hidden font-normal mr-1 text-gray-400">Horas:</span>
-            {{ proyecto.horasPresupuestadas }}h
-          </div>
-
+      <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="hidden md:grid grid-cols-12 gap-4 bg-gray-50 p-5 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs tracking-wider">
+          <div class="col-span-3">Código</div>
+          <div class="col-span-4">Nombre del Proyecto</div>
+          <div class="col-span-3">Cliente</div>
+          <div class="col-span-2 text-center">Acciones</div>
         </div>
 
-        <div *ngIf="listaProyectos.length === 0" class="flex flex-col items-center justify-center p-16 text-center">
-          <ion-icon name="folder-open-outline" class="text-7xl text-gray-300 mb-4"></ion-icon>
-          <h3 class="text-2xl font-bold text-gray-700">No hay proyectos vinculados</h3>
-          <p class="text-gray-500 mt-2 text-lg">Haz clic en "Nuevo Proyecto" para empezar a registrar datos.</p>
+        <div class="flex flex-col">
+          @for (proyecto of proyectos; track proyecto.id) {
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center">
+              <div class="col-span-1 md:col-span-3 text-indigo-600 font-bold font-mono">
+                <span class="md:hidden font-normal text-gray-400">Código:</span>
+                {{ proyecto.codigo || 'S/C' }}
+              </div>
+              <div class="col-span-1 md:col-span-4 font-bold text-gray-800 text-lg md:text-base">
+                {{ proyecto.nombre }}
+              </div>
+              <div class="col-span-1 md:col-span-3 text-gray-500">
+                <span class="md:hidden font-bold mr-1 text-gray-400">Cliente:</span>
+                {{ proyecto.cliente?.nombre || 'Sin cliente asignado' }}
+              </div>
+              <div class="col-span-1 md:col-span-2 text-center mt-2 md:mt-0">
+                <ion-button fill="clear" color="primary" (click)="abrirFormularioEditar(proyecto)">
+                  <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          } @empty {
+            <div class="flex flex-col items-center justify-center p-16 text-center">
+              <ion-icon name="folder-outline" class="text-7xl text-gray-300 mb-4"></ion-icon>
+              <h3 class="text-2xl font-bold text-gray-700">No hay proyectos</h3>
+              <p class="text-gray-500 mt-2 text-lg">Crea tu primer proyecto para empezar a trabajar.</p>
+            </div>
+          }
         </div>
       </div>
+    }
 
-    </div>
+    @if (mostrandoFormulario) {
+      <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6">
+        <ion-list class="bg-transparent">
+          
+          <ion-item class="mb-2 border rounded-xl bg-gray-50">
+            <ion-input label="Nombre del Proyecto" labelPlacement="floating" type="text" [(ngModel)]="proyectoForm.nombre" placeholder="Ej. Desarrollo Web Krama"></ion-input>
+          </ion-item>
+
+          <ion-item class="mb-2 border rounded-xl bg-gray-50">
+            <ion-input label="Código del Proyecto" labelPlacement="floating" type="text" [(ngModel)]="proyectoForm.codigo" placeholder="Ej. PRJ-2026-001"></ion-input>
+          </ion-item>
+
+          <ion-item class="mb-2 border rounded-xl bg-gray-50">
+            <ion-textarea label="Descripción" labelPlacement="floating" [(ngModel)]="proyectoForm.descripcion" rows="3" placeholder="Breve descripción del proyecto..."></ion-textarea>
+          </ion-item>
+
+          <ion-item class="mb-2 border rounded-xl bg-gray-50">
+            <ion-select label="Cliente Principal" labelPlacement="floating" [(ngModel)]="proyectoForm.clienteId">
+              <ion-select-option [value]="null">Ninguno</ion-select-option>
+              @for (cliente of clientes; track cliente.id) {
+                <ion-select-option [value]="cliente.id">{{ cliente.nombre }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <ion-item class="mb-4 border rounded-xl bg-gray-50">
+            <ion-select label="Usuarios Vinculados" labelPlacement="floating" [multiple]="true" [(ngModel)]="proyectoForm.usuariosIds">
+              @for (usuario of usuarios; track usuario.id) {
+                <ion-select-option [value]="usuario.id">{{ usuario.nombre }} {{ usuario.apellidos }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+        </ion-list>
+
+        <div class="flex justify-between mt-6">
+          <ion-button color="medium" fill="outline" shape="round" class="w-1/2 mr-2" (click)="cerrarFormulario()">
+            <ion-icon slot="start" name="close-outline"></ion-icon> Cancelar
+          </ion-button>
+          
+          <ion-button color="primary" shape="round" class="w-1/2 ml-2" (click)="guardarProyecto()">
+            <ion-icon slot="start" name="save-outline"></ion-icon> Guardar
+          </ion-button>
+        </div>
+
+      </div>
+    }
 
   </div>
 </ion-content>

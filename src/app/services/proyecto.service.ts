@@ -3,28 +3,37 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment'; 
 import { Observable } from 'rxjs';
 
-// Definimos la estructura de datos para que el frontend entienda qué es un Cliente
+// Definimos la estructura de datos para el Proyecto
 export interface Proyecto {
   id?: number;
   nombre: string;
+  codigo?: string;
+  descripcion?: string;
   costeTotal?: number; 
   horasPresupuestadas?: number;
   cliente?: any;
-  usuarios?: any;
-  // Puedes añadir más campos si tu backend los tiene (ej. email, direccion)
+  usuarios?: any[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProyectoService {
-  // Unimos la URL de tu entorno (http://localhost:8080) con la ruta de tu API
   private apiUrl = environment.apiUrl + '/api/proyectos'; 
 
   constructor(private http: HttpClient) { }
 
-  // Función que hace la petición GET al backend para traer la lista
   obtenerProyectos(): Observable<Proyecto[]> {
     return this.http.get<Proyecto[]>(this.apiUrl);
+  }
+
+  // Función POST para crear un nuevo proyecto
+  crearProyecto(nuevoProyecto: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, nuevoProyecto);
+  }
+
+  // Función PUT que envía el proyecto modificado al backend
+  actualizarProyecto(id: number, proyectoActualizado: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, proyectoActualizado);
   }
 }
