@@ -1,58 +1,50 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-
-// Importamos todos los componentes nativos de Ionic que vamos a usar
-import { IonContent, IonButton, IonInput, MenuController, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon } from '@ionic/angular/standalone';
-
-// Importamos la herramienta para usar los iconos oficiales de Ionic
-import { addIcons } from 'ionicons';
-import { personOutline, lockClosedOutline } from 'ionicons/icons';
+import { FormsModule } from '@angular/forms'; // MUY IMPORTANTE para poder leer los inputs
+// Mantén aquí todos los imports de Ionic que tenías en tu diseño original
+import { IonicModule } from '@ionic/angular'; 
+import { Router } from '@angular/router'; 
+import { AuthService } from '../services/auth.service'; 
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, FormsModule, IonButton,  IonInput, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon]
+  // Asegúrate de que FormsModule esté en esta lista de imports
+  imports: [CommonModule, FormsModule, IonicModule] 
 })
 export class LoginPage implements OnInit {
 
-  usuario: string = '';
+  // Variables para guardar lo que el usuario escriba
+  correo: string = '';
   contrasena: string = '';
 
   constructor(
-    private router: Router,
-    private menuCtrl: MenuController) { 
-      // Registramos los iconos que usaremos en los inputs
-      addIcons({ personOutline, lockClosedOutline });
-    }
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
-  ngOnInit() { }
-
-  ionViewWillEnter() {
-    this.menuCtrl.enable(false);
+  ngOnInit() {
   }
 
-  ionViewWillLeave() {
-    this.menuCtrl.enable(true);
-  }
+  hacerLogin() {
+    const credenciales = {
+      email: this.correo,
+      password: this.contrasena
+    };
 
-  inciarSesion(){
-    if (this.usuario === '' || this.contrasena === '') {
-      alert('Por favor, rellene los campos de usuario y contraseña');
-      return;
-    }
-
-    let rolAsignado = 'usuario'; 
-    if (this.usuario.toLowerCase() === 'admin') {
-      rolAsignado = 'administrador';
-    }
-    localStorage.setItem('rol', rolAsignado); 
-
-    console.log('Inicio de sesión exitoso. Rol asignado: ' , rolAsignado);
-
-    this.router.navigate(['/inicio']); 
+    // Llamamos a nuestro backend
+    this.authService.iniciarSesion(credenciales).subscribe({
+      next: (usuario) => {
+        console.log('¡Login correcto! Bienvenido:', usuario);
+        // Si entra bien, lo mandamos a la página de inicio
+        this.router.navigate(['/inicio']); 
+      },
+      error: (error) => {
+        console.error('Error de autenticación', error);
+        alert('Correo o contraseña incorrectos'); // Un alert sencillo para no romper tu diseño
+      }
+    });
   }
 }

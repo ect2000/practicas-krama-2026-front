@@ -16,8 +16,9 @@
               label="Usuario"
               labelPlacement="floating"
               placeholder="Ej. admin"
-              [(ngModel)]="usuario"
-              class="text-gray-800 font-medium">
+              class="text-gray-800 font-medium"
+              type="email"
+              [(ngModel)]="correo">
               <ion-icon slot="start" name="person-outline" class="text-gray-400 mr-2 mt-2"></ion-icon>
             </ion-input>
           </div>
@@ -28,8 +29,9 @@
               label="Contraseña"
               labelPlacement="floating"
               placeholder="Tu contraseña secreta"
-              [(ngModel)]="contrasena"
-              class="text-gray-800 font-medium">
+              class="text-gray-800 font-medium"
+              type="password"
+              [(ngModel)]="contrasena">
               <ion-icon slot="start" name="lock-closed-outline" class="text-gray-400 mr-2 mt-2"></ion-icon>
             </ion-input>
           </div>
@@ -39,7 +41,7 @@
             shape="round"
             class="mt-6 mb-4 h-14 text-lg font-bold shadow-lg"
             color="primary"
-            (click)="inciarSesion()">
+            (click)="hacerLogin()">
             Entrar al Sistema
           </ion-button>
           
