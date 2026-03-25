@@ -38,12 +38,15 @@ export class LoginPage implements OnInit {
     this.authService.iniciarSesion(credenciales).subscribe({
       next: (usuario) => {
         console.log('¡Login correcto! Bienvenido:', usuario);
+        
+        // ---> AÑADE ESTA LÍNEA: Guarda el usuario en la memoria <---
+        localStorage.setItem('usuarioLogueado', JSON.stringify(usuario));
+        
         // Si entra bien, lo mandamos a la página de inicio
         this.router.navigate(['/inicio']); 
       },
       error: (error) => {
-        console.error('Error de autenticación', error);
-        alert('Correo o contraseña incorrectos'); // Un alert sencillo para no romper tu diseño
+        // ... (tu código de error)
       }
     });
   }

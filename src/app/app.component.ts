@@ -28,7 +28,6 @@ export class AppComponent {
   
   // 2. Definimos las páginas exigidas en el documento Krama
   public appPages = [
-    { title: 'Inicio Sesion', url: '/login', icon: 'log-in' },
     { title: 'Tabla principal', url: '/inicio', icon: 'home' },
     { title: 'Informes', url: '/informes', icon: 'document-text' },
     { title: 'Notificaciones', url: '/notificaciones', icon: 'notifications' },
