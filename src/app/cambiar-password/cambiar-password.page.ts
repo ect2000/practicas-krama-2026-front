@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// Importamos el IonBackButton para poder volver atrás fácilmente
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonItem, IonInput, IonButton, IonText } from '@ionic/angular/standalone';
+// 1. AÑADIMOS LAS HERRAMIENTAS DE TARJETAS E ICONOS AQUÍ ARRIBA
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonItem, IonInput, IonButton, IonText, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon } from '@ionic/angular/standalone';
 import { UsuarioService } from '../services/usuario.service';
 import { Router } from '@angular/router';
 
@@ -11,7 +11,8 @@ import { Router } from '@angular/router';
   templateUrl: './cambiar-password.page.html',
   styleUrls: ['./cambiar-password.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonBackButton, IonItem, IonInput, IonButton, IonText]
+  // 2. AÑADIMOS LAS HERRAMIENTAS TAMBIÉN AQUÍ ABAJO
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonBackButton, IonItem, IonInput, IonButton, IonText, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonIcon]
 })
 export class CambiarPasswordPage implements OnInit {
 
