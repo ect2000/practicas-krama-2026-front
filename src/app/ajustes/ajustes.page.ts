@@ -27,8 +27,9 @@ export class AjustesPage implements OnInit {
   }
 
   cambiarTema() {
+    console.log('Botón pulsado. Modo oscuro está:', this.modoOscuro); // <--- AÑADE ESTO
+
     if (this.modoOscuro) {
-      // Usamos document.documentElement en lugar de document.body para Ionic 8
       document.documentElement.classList.add('ion-palette-dark');
       localStorage.setItem('modoOscuro', 'true');
     } else {
