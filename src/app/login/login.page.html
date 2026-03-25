@@ -11,6 +11,10 @@
       <ion-card-content>
         <div class="flex flex-col gap-5 mt-2">
           
+          <div *ngIf="mensajeError" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm animate-pulse" role="alert">
+            <p class="font-medium text-sm">{{ mensajeError }}</p>
+          </div>
+
           <div class="bg-gray-50 rounded-2xl border border-gray-200 px-4 py-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all">
             <ion-input
               label="Usuario"
@@ -25,7 +29,6 @@
 
           <div class="bg-gray-50 rounded-2xl border border-gray-200 px-4 py-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all">
             <ion-input
-              type="password"
               label="Contraseña"
               labelPlacement="floating"
               placeholder="Tu contraseña secreta"
