@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -7,10 +7,50 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">notificaciones</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-no-padding">
+  <div class="min-h-screen p-4 pt-10 flex justify-center">
+
+    <ion-card class="w-full max-w-lg bg-white rounded-3xl shadow-2xl m-0 self-start">
+      
+      <ion-card-header class="text-center pt-8">
+        <ion-card-title class="text-3xl font-extrabold text-blue-900">Avisos</ion-card-title>
+        <ion-card-subtitle class="text-blue-600 mt-2">Control de horas de proyectos</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content class="px-4 pb-8 pt-4">
+        
+        <div *ngIf="!alertasActivas" class="text-center py-8">
+          <ion-icon name="notifications-off-outline" class="text-6xl text-gray-300 mb-4"></ion-icon>
+          <h2 class="text-xl font-bold text-gray-700">Alertas desactivadas</h2>
+          <p class="text-gray-500 mt-2">No recibirás avisos de presupuesto.</p>
+          <ion-button routerLink="/ajustes" fill="clear" class="mt-4 font-bold">Ir a Ajustes</ion-button>
+        </div>
+
+        <div *ngIf="alertasActivas && cargando" class="text-center py-8">
+          <ion-icon name="sync-outline" class="text-6xl text-blue-300 mb-4 animate-spin"></ion-icon>
+          <p class="text-gray-500 font-semibold">Analizando proyectos...</p>
+        </div>
+
+        <div *ngIf="alertasActivas && !cargando && notificaciones.length === 0" class="text-center py-8">
+          <ion-icon name="checkmark-circle" class="text-6xl text-green-400 mb-4"></ion-icon>
+          <h2 class="text-xl font-bold text-gray-700">¡Todo bajo control!</h2>
+          <p class="text-gray-500 mt-2">Ningún proyecto ha superado el 80% de su presupuesto estimado.</p>
+        </div>
+
+        <ion-list *ngIf="alertasActivas && !cargando && notificaciones.length > 0" lines="full" class="bg-transparent mt-2">
+          
+          <ion-item *ngFor="let alerta of notificaciones" class="rounded-xl mb-3 border border-gray-100 shadow-sm" lines="none">
+            <ion-icon slot="start" [name]="alerta.icono" [color]="alerta.color" class="text-3xl mt-2 self-start"></ion-icon>
+            <ion-label class="ion-text-wrap py-2">
+              <h2 class="font-bold text-gray-900 mb-1">{{ alerta.titulo }}</h2>
+              <p class="text-gray-600 text-sm leading-relaxed">{{ alerta.mensaje }}</p>
+            </ion-label>
+          </ion-item>
+
+        </ion-list>
+
+      </ion-card-content>
+    </ion-card>
+
+  </div>
 </ion-content>
