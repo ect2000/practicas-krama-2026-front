@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 // Importamos las piezas visuales necesarias
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonList, IonListHeader, IonItem, IonLabel, IonToggle } from '@ionic/angular/standalone';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-ajustes',
   templateUrl: './ajustes.page.html',
   styleUrls: ['./ajustes.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, IonList, IonListHeader, IonItem, IonLabel, IonToggle]
+  // 2. AÑADIMOS RouterModule AL FINAL DE ESTA LISTA
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, IonList, IonListHeader, IonItem, IonLabel, IonToggle, RouterModule]
 })
 export class AjustesPage implements OnInit {
 

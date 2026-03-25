@@ -10,6 +10,7 @@
 <ion-content class="ion-padding">
 
   <ion-list>
+    
     <ion-list-header>
       <ion-label color="primary">Apariencia</ion-label>
     </ion-list-header>
@@ -19,9 +20,20 @@
         <h2>Modo Oscuro</h2>
         <p>Cambia los colores de la aplicación</p>
       </ion-label>
-      
       <ion-toggle slot="end" [(ngModel)]="modoOscuro" (ionChange)="cambiarTema()"></ion-toggle>
     </ion-item>
+
+    <ion-list-header style="margin-top: 20px;">
+      <ion-label color="primary">Seguridad</ion-label>
+    </ion-list-header>
+
+    <ion-item button routerLink="/cambiar-password">
+      <ion-label>
+        <h2>Cambiar contraseña</h2>
+        <p>Actualiza tus credenciales de acceso</p>
+      </ion-label>
+    </ion-item>
+
   </ion-list>
 
 </ion-content>
