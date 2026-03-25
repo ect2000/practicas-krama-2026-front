@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonList, IonItem, IonLabel} from '@ionic/angular/standalone';
+// 1. Añadimos IonButton e IonIcon
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonButton, IonIcon } from '@ionic/angular/standalone';
+
+// 2. Importamos las herramientas de iconos
+import { addIcons } from 'ionicons';
+import { addOutline, folderOpenOutline } from 'ionicons/icons';
 
 import { ProyectoService, Proyecto } from '../services/proyecto.service';
 
@@ -10,32 +15,31 @@ import { ProyectoService, Proyecto } from '../services/proyecto.service';
   templateUrl: './proyectos.page.html',
   styleUrls: ['./proyectos.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule,IonButtons,IonMenuButton, IonList, IonLabel, IonItem]
+  // 3. Declaramos IonButton e IonIcon
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, IonButton, IonIcon]
 })
 export class ProyectosPage implements OnInit {
 
   listaProyectos: Proyecto[] = [];
 
-  // Inyectamos el servicio (nuestro mensajero)
-    constructor(private proyectoService: ProyectoService) { }
+  constructor(private proyectoService: ProyectoService) { 
+    // 4. Registramos los iconos
+    addIcons({ addOutline, folderOpenOutline });
+  }
   
-    // Esta función se dispara nada más entrar en la página
-    ngOnInit() {
-      this.cargarDatos();
-    }
+  ngOnInit() {
+    this.cargarDatos();
+  }
   
-    cargarDatos() {
-      // Pedimos los datos y nos quedamos "escuchando" (subscribe) la respuesta
-      this.proyectoService.obtenerProyectos().subscribe({
-        next: (datos) => {
-          console.log('¡Éxito! Proyectos recibidos:', datos);
-          // Guardamos los datos en nuestra variable
-          this.listaProyectos = datos; 
-        },
-        error: (error) => {
-          console.error('Error al traer los Proyectos:', error);
-        }
-      });
-    }
-
+  cargarDatos() {
+    this.proyectoService.obtenerProyectos().subscribe({
+      next: (datos) => {
+        console.log('¡Éxito! Proyectos recibidos:', datos);
+        this.listaProyectos = datos; 
+      },
+      error: (error) => {
+        console.error('Error al traer los Proyectos:', error);
+      }
+    });
+  }
 }
