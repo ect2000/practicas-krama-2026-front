@@ -10,7 +10,21 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">clientes</ion-title>
+      <ion-title size="large">Clientes</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <ion-list>
+    <ion-item *ngFor="let cliente of listaClientes">
+      <ion-label>
+        <h2>{{ cliente.nombre }}</h2>
+        <p>ID: {{ cliente.id }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="listaClientes.length === 0" class="ion-padding ion-text-center">
+    <p>Buscando clientes o no hay datos disponibles...</p>
+  </div>
+
 </ion-content>
