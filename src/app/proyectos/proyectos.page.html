@@ -10,7 +10,21 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">proyectos</ion-title>
+      <ion-title size="large">Proyectos</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <ion-list>
+    <ion-item *ngFor="let proyecto of listaProyectos">
+      <ion-label>
+        <h2>{{ proyecto.nombre }}</h2>
+        <p>Presupuesto: {{ proyecto.costeTotal }}€ | Horas: {{ proyecto.horasPresupuestadas }}h</p>
+        <p *ngIf="proyecto.cliente"><strong>Cliente:</strong> {{ proyecto.cliente.nombre }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="listaProyectos.length === 0" class="ion-padding ion-text-center">
+    <p>Buscando proyectos o no hay datos disponibles...</p>
+  </div>
 </ion-content>
