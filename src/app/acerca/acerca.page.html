@@ -1,59 +1,73 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Acerca de mí</ion-title>
+    <ion-title class="font-bold tracking-wide">Acerca de mí</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="bg-gray-50">
+  <div class="max-w-6xl mx-auto p-4 md:p-6">
 
-  <ion-card *ngIf="usuarioActual">
-    <ion-card-header>
-      <ion-card-title>Mi Perfil</ion-card-title>
-    </ion-card-header>
-
-    <ion-card-content>
-      <ion-list>
-        <ion-item>
-          <ion-label>
-            <h3>Nombre Completo</h3>
-            <p>{{ usuarioActual.nombre }} {{ usuarioActual.apellidos }}</p>
-          </ion-label>
-        </ion-item>
-        
-        <ion-item>
-          <ion-label>
-            <h3>Correo Electrónico</h3>
-            <p>{{ usuarioActual.email }}</p>
-          </ion-label>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>
-            <h3>Teléfono</h3>
-            <p>{{ usuarioActual.telefono }}</p>
-          </ion-label>
-        </ion-item>
-
-        <ion-item lines="none">
-          <ion-label>
-            <h3>Rol</h3>
-            <p><strong>{{ usuarioActual.rol }}</strong></p>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-
-      <ion-button expand="block" color="danger" class="ion-margin-top" (click)="cerrarSesion()">
+    <div class="flex justify-end mb-4" *ngIf="usuarioActual">
+      <ion-button shape="round" color="danger" class="font-bold shadow-lg h-12 px-4" (click)="cerrarSesion()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
         Cerrar Sesión
       </ion-button>
-    </ion-card-content>
-  </ion-card>
+    </div>
 
-  <div *ngIf="!usuarioActual" class="ion-text-center ion-padding-top">
-    <p>No hay ninguna sesión iniciada.</p>
-    <ion-button expand="block" routerLink="/login">Ir a Iniciar Sesión</ion-button>
+    <div *ngIf="usuarioActual" class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden p-6 md:p-10">
+      <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+        
+        <div class="w-32 h-32 bg-blue-50 rounded-full flex items-center justify-center border-4 border-blue-100 flex-shrink-0">
+          <ion-icon name="person" class="text-6xl text-blue-500"></ion-icon>
+        </div>
+        
+        <div class="flex-1 w-full text-center md:text-left">
+          <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            {{ usuarioActual.nombre }} {{ usuarioActual.apellidos }}
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 transition-colors hover:bg-gray-100">
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Correo Electrónico</p>
+              <p class="text-gray-700 font-medium text-lg truncate" title="{{ usuarioActual.email }}">
+                {{ usuarioActual.email }}
+              </p>
+            </div>
+
+            <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 transition-colors hover:bg-gray-100">
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Teléfono</p>
+              <p class="text-gray-700 font-medium text-lg">
+                {{ usuarioActual.telefono || 'No especificado' }}
+              </p>
+            </div>
+
+            <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100 md:col-span-2">
+              <p class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Rol en el sistema</p>
+              <p class="text-blue-700 font-bold text-xl uppercase tracking-wide">
+                {{ usuarioActual.rol }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div *ngIf="!usuarioActual" class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden mt-4">
+      <div class="flex flex-col items-center justify-center p-16 text-center">
+        <ion-icon name="person-circle-outline" class="text-7xl text-gray-300 mb-4"></ion-icon>
+        <h3 class="text-2xl font-bold text-gray-700">Sesión no iniciada</h3>
+        <p class="text-gray-500 mt-2 text-lg mb-8">No hay ninguna sesión activa en este momento para mostrar el perfil.</p>
+        
+        <ion-button shape="round" color="primary" class="font-bold shadow-lg h-12 px-8" routerLink="/login">
+          <ion-icon slot="start" name="log-in-outline"></ion-icon>
+          Ir a Iniciar Sesión
+        </ion-button>
+      </div>
+    </div>
+
   </div>
-
 </ion-content>
