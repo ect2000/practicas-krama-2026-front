@@ -1,42 +1,46 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http'; // <-- 1. Importamos la herramienta para hacer peticiones
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonMenuButton, IonButtons, IonList, IonItem, IonLabel } from '@ionic/angular/standalone'; // <-- 2. Añadimos componentes de lista
+import { HttpClient } from '@angular/common/http';
+// 1. Añadimos IonButton e IonIcon a la lista de componentes de Ionic
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonMenuButton, IonButtons, IonButton, IonIcon } from '@ionic/angular/standalone'; 
+
+// 2. Importamos la función para añadir iconos y los iconos específicos que usamos en tu HTML
+import { addIcons } from 'ionicons';
+import { addOutline, peopleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-usuarios',
   templateUrl: './usuarios.page.html',
   styleUrls: ['./usuarios.page.scss'],
   standalone: true,
-  // 3. ¡Importante! Declaramos los componentes de Ionic que vamos a usar en el HTML
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, IonList, IonItem, IonLabel]
+  // 3. Declaramos IonButton e IonIcon para que Angular deje de dar error en el HTML
+  // (También he limpiado IonList, IonItem e IonLabel porque ya no los usamos en el nuevo diseño)
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, IonButton, IonIcon]
 })
 export class UsuariosPage implements OnInit {
 
-  // Aquí guardaremos los usuarios que nos devuelva el Backend
   usuarios: any[] = []; 
-  
-  // Inyectamos la herramienta HttpClient
   private http = inject(HttpClient); 
 
-  constructor() { }
+  constructor() { 
+    // 4. Registramos los iconos para que se dibujen en la pantalla
+    addIcons({ addOutline, peopleOutline });
+  }
 
   ngOnInit() {
     this.obtenerUsuarios();
   }
 
   obtenerUsuarios() {
-    // 4. Hacemos la llamada GET a la ruta exacta de tu Spring Boot
     this.http.get<any[]>('http://localhost:8080/api/usuarios').subscribe({
       next: (datosDelBackend) => {
         console.log('¡Éxito! Datos recibidos:', datosDelBackend);
-        this.usuarios = datosDelBackend; // Guardamos los datos para que el HTML los dibuje
+        this.usuarios = datosDelBackend; 
       },
       error: (error) => {
         console.error('Ha habido un error de conexión:', error);
       }
     });
   }
-
 }
