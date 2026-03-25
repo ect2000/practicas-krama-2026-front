@@ -7,10 +7,21 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">ajustes</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+
+  <ion-list>
+    <ion-list-header>
+      <ion-label color="primary">Apariencia</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>
+        <h2>Modo Oscuro</h2>
+        <p>Cambia los colores de la aplicación</p>
+      </ion-label>
+      
+      <ion-toggle slot="end" [(ngModel)]="modoOscuro" (ionChange)="cambiarTema()"></ion-toggle>
+    </ion-item>
+  </ion-list>
+
 </ion-content>

@@ -39,6 +39,11 @@ export class AppComponent {
   ];
 
   constructor() {
+    const temaGuardado = localStorage.getItem('modoOscuro');
+    if (temaGuardado === 'true') {
+      // Usamos document.documentElement aquí también
+      document.documentElement.classList.add('ion-palette-dark'); 
+    }
     // 3. Registramos los iconos para que Ionic los dibuje en el HTML
     addIcons({ 
       homeOutline, homeSharp, 
