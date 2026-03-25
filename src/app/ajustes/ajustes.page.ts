@@ -28,22 +28,34 @@ import {
 })
 export class AjustesPage implements OnInit {
 
-  // Variable unida al interruptor de la pantalla
   modoOscuro: boolean = false;
+  
+  // 1. NUEVAS VARIABLES PARA LAS ALERTAS
+  alertaPresupuesto: boolean = true; // Por defecto encendida
+  resumenSemanal: boolean = false;   // Por defecto apagada
 
   constructor() { }
 
   ngOnInit() {
-    // Al abrir la pantalla de ajustes, comprobamos cómo estaba el interruptor
+    // Leer preferencias de modo oscuro
     const temaGuardado = localStorage.getItem('modoOscuro');
     if (temaGuardado === 'true') {
       this.modoOscuro = true;
     }
+
+    // 2. LEER PREFERENCIAS DE ALERTAS AL INICIAR
+    const alertaGuardada = localStorage.getItem('alertaPresupuesto');
+    if (alertaGuardada !== null) {
+      this.alertaPresupuesto = alertaGuardada === 'true';
+    }
+
+    const resumenGuardado = localStorage.getItem('resumenSemanal');
+    if (resumenGuardado !== null) {
+      this.resumenSemanal = resumenGuardado === 'true';
+    }
   }
 
   cambiarTema() {
-    console.log('Botón pulsado. Modo oscuro está:', this.modoOscuro); // <--- AÑADE ESTO
-
     if (this.modoOscuro) {
       document.documentElement.classList.add('ion-palette-dark');
       localStorage.setItem('modoOscuro', 'true');
@@ -51,6 +63,12 @@ export class AjustesPage implements OnInit {
       document.documentElement.classList.remove('ion-palette-dark');
       localStorage.setItem('modoOscuro', 'false');
     }
+  }
+
+  // 3. NUEVA FUNCIÓN PARA GUARDAR CUANDO TOQUES LOS INTERRUPTORES
+  guardarAlertas() {
+    localStorage.setItem('alertaPresupuesto', this.alertaPresupuesto.toString());
+    localStorage.setItem('resumenSemanal', this.resumenSemanal.toString());
   }
 
 }
