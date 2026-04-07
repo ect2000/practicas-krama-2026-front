@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonButton, IonInput, IonGrid, IonRow, IonCol, IonCard, IonCardContent } from '@ionic/angular/standalone';
+import { IonicModule } from '@ionic/angular';
+import { RouterModule } from '@angular/router';
 
 // Importamos iconos modernos de Ionic (Añadimos folderOpenOutline para el mensaje de vacío)
 import { addIcons } from 'ionicons';
@@ -12,7 +13,7 @@ import { chevronBackOutline, chevronForwardOutline, addOutline, saveOutline, cal
   templateUrl: './inicio.page.html',
   styleUrls: ['./inicio.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonMenuButton, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonButton, IonInput, IonGrid, IonRow, IonCol, IonCard, IonCardContent]
+  imports: [IonicModule, CommonModule, FormsModule, RouterModule]
 })
 export class InicioPage implements OnInit {
 
