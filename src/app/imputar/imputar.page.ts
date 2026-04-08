@@ -17,14 +17,15 @@ import { Imputacion } from '../models/imputacion.model';
 export class ImputarPage implements OnInit {
 
   nuevaImputacion: Imputacion = {
-    // Inicializamos en null para que Ionic muestre el placeholder correctamente
-    proyecto: { id: null as any }, 
+    proyecto: { id: 0 }, 
     usuario: { id: 0 }, 
     fecha: new Date().toISOString().split('T')[0], 
-    // También ponemos horas en null para que el campo empiece limpio
     horas: null as any, 
     anotaciones: ''
   };
+
+  // ¡NUEVO! Variable plana para que el selector funcione perfectamente
+  proyectoSeleccionadoId: number | null = null;
 
   esEdicion: boolean = false; 
   proyectos: any[] = []; 
@@ -55,7 +56,8 @@ export class ImputarPage implements OnInit {
   comprobarProyectoPreseleccionado() {
     this.route.queryParams.subscribe(params => {
       if (params['proyectoId']) {
-        this.nuevaImputacion.proyecto.id = Number(params['proyectoId']);
+        // Asignamos a nuestra variable plana
+        this.proyectoSeleccionadoId = Number(params['proyectoId']);
       }
     });
   }
@@ -77,12 +79,20 @@ export class ImputarPage implements OnInit {
   }
 
   guardarImputacion() {
+    // 1. Pasamos el dato de la pantalla a nuestro objeto final
+    if (this.proyectoSeleccionadoId) {
+      this.nuevaImputacion.proyecto.id = Number(this.proyectoSeleccionadoId);
+    } else {
+      this.nuevaImputacion.proyecto.id = 0; // Provoca el error de validación abajo si está vacío
+    }
+
+    // 2. Validaciones habituales
     if (this.nuevaImputacion.usuario.id === 0) {
       alert('Error: No se ha detectado tu sesión de usuario.');
       return;
     }
 
-    if (!this.nuevaImputacion.proyecto.id) {
+    if (!this.nuevaImputacion.proyecto.id || this.nuevaImputacion.proyecto.id === 0) {
       alert('Por favor, selecciona un proyecto de la lista.');
       return;
     }
@@ -97,6 +107,7 @@ export class ImputarPage implements OnInit {
       return;
     }
 
+    // 3. Guardado
     if (this.esEdicion && this.nuevaImputacion.id) {
       this.imputacionService.actualizarImputacion(this.nuevaImputacion.id, this.nuevaImputacion).subscribe({
         next: () => {
@@ -120,9 +131,5 @@ export class ImputarPage implements OnInit {
         }
       });
     }
-  }
-
-  compararProyectos(o1: any, o2: any) {
-    return o1 == o2; // Usamos == en lugar de === para que ignore si es string o number
   }
 }
