@@ -4,9 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular'; 
 import { Router, ActivatedRoute } from '@angular/router'; 
 import { ImputacionService } from '../services/imputacion.service';
-import { ProyectoService } from '../services/proyecto.service'; // ¡NUEVO! Importamos el servicio de proyectos
+import { ProyectoService } from '../services/proyecto.service'; 
 import { Imputacion } from '../models/imputacion.model';
-
 
 @Component({
   selector: 'app-imputar',
@@ -18,19 +17,21 @@ import { Imputacion } from '../models/imputacion.model';
 export class ImputarPage implements OnInit {
 
   nuevaImputacion: Imputacion = {
-    proyecto: { id: 0 },
+    // Inicializamos en null para que Ionic muestre el placeholder correctamente
+    proyecto: { id: null as any }, 
     usuario: { id: 0 }, 
     fecha: new Date().toISOString().split('T')[0], 
-    horas: 0,
+    // También ponemos horas en null para que el campo empiece limpio
+    horas: null as any, 
     anotaciones: ''
   };
 
   esEdicion: boolean = false; 
-  proyectos: any[] = []; // ¡NUEVO! Aquí guardaremos los proyectos para el desplegable
+  proyectos: any[] = []; 
 
   constructor(
     private imputacionService: ImputacionService,
-    private proyectoService: ProyectoService, // ¡NUEVO! Inyectamos el servicio
+    private proyectoService: ProyectoService, 
     private router: Router,
     private route: ActivatedRoute 
   ) { }
@@ -38,11 +39,10 @@ export class ImputarPage implements OnInit {
   ngOnInit() {
     this.cargarUsuarioLogueado();
     this.comprobarSiEsEdicion();
-    this.cargarProyectos(); // Cargamos la lista al abrir la página
-    this.comprobarProyectoPreseleccionado(); // Miramos si venimos desde la pantalla de Inicio
+    this.cargarProyectos(); 
+    this.comprobarProyectoPreseleccionado(); 
   }
 
- 
   cargarProyectos() {
     this.proyectoService.obtenerProyectos().subscribe({
       next: (data) => {
@@ -55,7 +55,6 @@ export class ImputarPage implements OnInit {
   comprobarProyectoPreseleccionado() {
     this.route.queryParams.subscribe(params => {
       if (params['proyectoId']) {
-        // Si en la URL viene el ID, lo seleccionamos automáticamente en el desplegable
         this.nuevaImputacion.proyecto.id = Number(params['proyectoId']);
       }
     });
@@ -83,13 +82,18 @@ export class ImputarPage implements OnInit {
       return;
     }
 
-    if (!this.nuevaImputacion.proyecto.id || this.nuevaImputacion.proyecto.id === 0) {
+    if (!this.nuevaImputacion.proyecto.id) {
       alert('Por favor, selecciona un proyecto de la lista.');
       return;
     }
 
-    if (this.nuevaImputacion.horas <= 0) {
-      alert('Por favor, introduce un número de horas válido.');
+    if (this.nuevaImputacion.horas === null || this.nuevaImputacion.horas < 0) {
+      alert('No puedes imputar una cantidad negativa de horas.');
+      return;
+    }
+
+    if (this.nuevaImputacion.horas === 0) {
+      alert('Por favor, introduce el número de horas dedicadas.');
       return;
     }
 
@@ -116,5 +120,9 @@ export class ImputarPage implements OnInit {
         }
       });
     }
+  }
+
+  compararProyectos(o1: any, o2: any) {
+    return o1 == o2; // Usamos == en lugar de === para que ignore si es string o number
   }
 }

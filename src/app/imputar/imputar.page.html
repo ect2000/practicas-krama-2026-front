@@ -1,42 +1,76 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/inicio"></ion-back-button>
+      <ion-back-button defaultHref="/inicio" text="Volver"></ion-back-button>
     </ion-buttons>
-    <ion-title>Añadir Imputación</ion-title>
+    <ion-title class="font-bold tracking-wide">
+      {{ esEdicion ? 'Editar Imputación' : 'Añadir Imputación' }}
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  
-  <ion-list>
-    
-    <ion-item>
-      <ion-label position="stacked">Proyecto</ion-label>
-      <ion-select [(ngModel)]="nuevaImputacion.proyecto.id" placeholder="Selecciona un proyecto" interface="action-sheet">
-        <ion-select-option *ngFor="let proyecto of proyectos" [value]="proyecto.id">
-          {{ proyecto.nombre }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item>
-      <ion-label position="stacked">Fecha</ion-label>
-      <ion-input type="date" [(ngModel)]="nuevaImputacion.fecha"></ion-input>
-    </ion-item>
+<ion-content class="bg-gray-50">
+  <div class="max-w-3xl mx-auto p-4 md:p-6">
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 mt-4">
+      
+      <ion-list class="bg-transparent">
+        
+        <ion-item class="mb-4 border rounded-xl bg-gray-50">
+          <ion-select 
+            label="Proyecto" 
+            labelPlacement="floating" 
+            [(ngModel)]="nuevaImputacion.proyecto.id" 
+            [compareWith]="compararProyectos"
+            placeholder="Selecciona un proyecto" 
+            interface="popover">
+            
+            <ion-select-option *ngFor="let proyecto of proyectos" [value]="proyecto.id">
+              {{ proyecto.nombre }}
+            </ion-select-option>
+            
+          </ion-select>
+        </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Horas dedicadas</ion-label>
-      <ion-input type="number" [(ngModel)]="nuevaImputacion.horas" placeholder="Ej. 4"></ion-input>
-    </ion-item>
+        <ion-item class="mb-4 border rounded-xl bg-gray-50">
+          <ion-input 
+            label="Fecha"
+            labelPlacement="stacked"
+            type="date" 
+            [(ngModel)]="nuevaImputacion.fecha">
+          </ion-input>
+        </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Anotaciones / Comentarios</ion-label>
-      <ion-textarea [(ngModel)]="nuevaImputacion.anotaciones" placeholder="¿Qué tareas has realizado?" autoGrow="true"></ion-textarea>
-    </ion-item>
-  </ion-list>
+        <ion-item class="mb-4 border rounded-xl bg-gray-50">
+          <ion-input 
+            label="Horas dedicadas"
+            labelPlacement="stacked"
+            type="number" 
+            min="0" 
+            [(ngModel)]="nuevaImputacion.horas" 
+            placeholder="Ej. 4">
+          </ion-input>
+        </ion-item>
 
-  <ion-button expand="block" class="ion-margin-top" (click)="guardarImputacion()">
-    Guardar Horas
-  </ion-button>
+        <ion-item class="mb-4 border rounded-xl bg-gray-50">
+          <ion-textarea 
+            label="Anotaciones / Comentarios"
+            labelPlacement="stacked"
+            [(ngModel)]="nuevaImputacion.anotaciones" 
+            placeholder="¿Qué tareas has realizado?" 
+            autoGrow="true"
+            rows="3">
+          </ion-textarea>
+        </ion-item>
+        
+      </ion-list>
 
+      <div class="mt-6">
+        <ion-button expand="block" shape="round" color="primary" class="h-12 shadow-lg font-bold" (click)="guardarImputacion()">
+          <ion-icon slot="start" name="save-outline"></ion-icon>
+          Guardar Horas
+        </ion-button>
+      </div>
+
+    </div>
+  </div>
 </ion-content>
