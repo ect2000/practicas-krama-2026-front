@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 
 export interface Cliente {
   id?: number;
+  codigo?: string; // <--- AÑADIDO AQUÍ
   nombre: string;
-  codigo?: string;
   descripcion?: string;
 }
 

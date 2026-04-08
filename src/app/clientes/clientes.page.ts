@@ -61,8 +61,8 @@ export class ClientesPage implements OnInit {
     this.mostrandoFormulario = false;
   }
 
-  resetearFormulario(): Cliente {
-    return { nombre: '', codigo: '', descripcion: '' };
+  resetearFormulario() {
+    return { codigo: '', nombre: '', descripcion: '' }; 
   }
 
   guardarCliente() {
