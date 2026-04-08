@@ -15,6 +15,10 @@ export class UsuarioService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  obtenerUsuarioPorId(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
   crearUsuario(nuevoUsuario: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, nuevoUsuario);
   }

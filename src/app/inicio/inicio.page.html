@@ -61,6 +61,32 @@
         <h3 class="text-2xl font-bold text-gray-700">No hay proyectos vinculados</h3>
         <p class="text-gray-500 mt-2 text-lg">Haz clic en "Vincular Proyecto" para empezar a registrar tus horas del día.</p>
       </div>
+      <div *ngIf="proyectosVinculados.length > 0">
+        
+        <div *ngFor="let proyecto of proyectosVinculados" class="grid grid-cols-1 md:grid-cols-12 gap-4 p-5 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors">
+          
+          <div class="col-span-1 md:col-span-4 font-semibold text-gray-800 text-lg">
+            <ion-icon name="folder-open-outline" class="text-primary mr-2 align-middle"></ion-icon>
+            {{ proyecto.nombre }}
+          </div>
+          
+          <div class="col-span-1 md:col-span-2">
+            <ion-input type="number" placeholder="0" class="bg-gray-100 rounded-lg text-center font-bold h-12"></ion-input>
+          </div>
+          
+          <div class="col-span-1 md:col-span-5">
+            <ion-input type="text" placeholder="¿Qué tareas has realizado?" class="bg-gray-100 rounded-lg px-4 h-12"></ion-input>
+          </div>
+          
+          <div class="col-span-1 md:col-span-1 flex justify-center md:justify-end">
+            <ion-button fill="clear" color="primary" class="h-12 w-12 rounded-full bg-blue-50">
+              <ion-icon slot="icon-only" name="save-outline"></ion-icon>
+            </ion-button>
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
 
