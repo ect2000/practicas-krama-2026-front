@@ -70,14 +70,16 @@ export class UsuariosPage implements OnInit {
   }
 
   abrirFormularioEditar(usuario: any) {
-    // Si tu backend funciona igual que en Proyectos, aquí mapeamos clientes y proyectos
-    const clientesIds = usuario.clientes ? usuario.clientes.map((c: any) => c.id) : [];
+    // 1. Extraemos el ID del único cliente (si tiene)
+    const clienteId = usuario.cliente ? usuario.cliente.id : null;
     const proyectosIds = usuario.proyectos ? usuario.proyectos.map((p: any) => p.id) : [];
 
-    this.usuarioForm = { ...usuario, clientesIds, proyectosIds };
+    this.usuarioForm = { ...usuario, clienteId, proyectosIds };
     this.editando = true;
     this.mostrandoFormulario = true;
-    this.alCambiarClientes();
+    
+    // Filtramos los proyectos para que coincidan con su cliente
+    this.alCambiarCliente();
   }
 
   cerrarFormulario() {
@@ -85,18 +87,23 @@ export class UsuariosPage implements OnInit {
   }
 
   resetearFormulario() {
-    return { nombre: '', apellidos: '', email: '', telefono: '', permisos: '', clientesIds: [], proyectosIds: [] };
+    // Cambiamos permisos por 'rol' y clientesIds por 'clienteId'
+    return { nombre: '', apellidos: '', email: '', telefono: '', rol: '', clienteId: null, proyectosIds: [] };
   }
 
-  alCambiarClientes() {
-    const clientesSeleccionados = this.usuarioForm.clientesIds || [];
-    if (clientesSeleccionados.length === 0) {
+  // Cambiamos el nombre de la función para reflejar que es un solo cliente
+  alCambiarCliente() {
+    const idCliente = this.usuarioForm.clienteId;
+    
+    if (!idCliente) {
       this.proyectosVisibles = [...this.proyectos];
     } else {
+      // Filtramos proyectos que pertenezcan a ese único cliente
       this.proyectosVisibles = this.proyectos.filter(proyecto => 
-        proyecto.cliente && clientesSeleccionados.includes(proyecto.cliente.id)
+        proyecto.cliente && proyecto.cliente.id === idCliente
       );
     }
+    
     if (this.usuarioForm.proyectosIds) {
       this.usuarioForm.proyectosIds = this.usuarioForm.proyectosIds.filter((id: number) => 
         this.proyectosVisibles.some(pv => pv.id === id)
@@ -105,19 +112,21 @@ export class UsuariosPage implements OnInit {
   }
 
   guardarUsuario() {
-    // 1. Construimos el objeto EXACTO que espera el backend, 
-    // sin enviar variables extra que el servidor no entienda.
+    // AHORA SÍ: Construimos el objeto EXACTO que espera Spring Boot
     const datosParaAPI = {
       id: this.usuarioForm.id,
       nombre: this.usuarioForm.nombre,
       apellidos: this.usuarioForm.apellidos,
       email: this.usuarioForm.email,
       telefono: this.usuarioForm.telefono,
-      permisos: this.usuarioForm.permisos,
       
-      // 2. Añadimos un "|| []" de seguridad por si el usuario no selecciona nada, 
-      // evitando que la función .map() rompa la página.
-      clientes: (this.usuarioForm.clientesIds || []).map((id: number) => ({ id: id })),
+      // Enviamos 'rol' en lugar de 'permisos'
+      rol: this.usuarioForm.rol, 
+      
+      // Enviamos UN SOLO objeto cliente (si seleccionó alguno), o null
+      cliente: this.usuarioForm.clienteId ? { id: this.usuarioForm.clienteId } : null,
+      
+      // Los proyectos siguen siendo múltiples
       proyectos: (this.usuarioForm.proyectosIds || []).map((id: number) => ({ id: id }))
     };
 
@@ -129,7 +138,7 @@ export class UsuariosPage implements OnInit {
         },
         error: (err) => {
           console.error('Error del servidor al actualizar:', err);
-          alert('No se pudo actualizar el usuario. Abre la consola (F12) para ver el error del servidor.');
+          alert('No se pudo actualizar el usuario. Abre la consola para ver el error.');
         }
       });
     } else {
@@ -140,7 +149,7 @@ export class UsuariosPage implements OnInit {
         },
         error: (err) => {
           console.error('Error del servidor al crear:', err);
-          alert('No se pudo guardar el usuario. Abre la consola (F12) para ver el error del servidor.');
+          alert('No se pudo guardar el usuario. Abre la consola para ver el error.');
         }
       });
     }

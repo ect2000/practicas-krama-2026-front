@@ -73,14 +73,14 @@
           </ion-item>
 
           <ion-item class="mb-2 border rounded-xl bg-gray-50">
-            <ion-select label="Permisos" labelPlacement="floating" [(ngModel)]="usuarioForm.permisos">
+            <ion-select label="Rol / Permisos" labelPlacement="floating" [(ngModel)]="usuarioForm.rol">
               <ion-select-option value="ADMIN">Administrador</ion-select-option>
               <ion-select-option value="USER">Usuario Estándar</ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item class="mb-2 border rounded-xl bg-gray-50">
-            <ion-select label="Clientes" labelPlacement="floating" [multiple]="true" [(ngModel)]="usuarioForm.clientesIds" (ionChange)="alCambiarClientes()">
+            <ion-select label="Cliente" labelPlacement="floating" [(ngModel)]="usuarioForm.clienteId" (ionChange)="alCambiarCliente()">
               @for (cliente of clientes; track cliente.id) {
                 <ion-select-option [value]="cliente.id">{{ cliente.nombre }}</ion-select-option>
               }
