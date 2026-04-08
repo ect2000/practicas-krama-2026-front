@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { IonicModule } from '@ionic/angular'; 
 import { Router, ActivatedRoute } from '@angular/router'; 
-
 import { ImputacionService } from '../services/imputacion.service';
+import { ProyectoService } from '../services/proyecto.service'; // ¡NUEVO! Importamos el servicio de proyectos
 import { Imputacion } from '../models/imputacion.model';
+
 
 @Component({
   selector: 'app-imputar',
@@ -25,9 +26,11 @@ export class ImputarPage implements OnInit {
   };
 
   esEdicion: boolean = false; 
+  proyectos: any[] = []; // ¡NUEVO! Aquí guardaremos los proyectos para el desplegable
 
   constructor(
     private imputacionService: ImputacionService,
+    private proyectoService: ProyectoService, // ¡NUEVO! Inyectamos el servicio
     private router: Router,
     private route: ActivatedRoute 
   ) { }
@@ -35,17 +38,34 @@ export class ImputarPage implements OnInit {
   ngOnInit() {
     this.cargarUsuarioLogueado();
     this.comprobarSiEsEdicion();
+    this.cargarProyectos(); // Cargamos la lista al abrir la página
+    this.comprobarProyectoPreseleccionado(); // Miramos si venimos desde la pantalla de Inicio
+  }
+
+ 
+  cargarProyectos() {
+    this.proyectoService.obtenerProyectos().subscribe({
+      next: (data) => {
+        this.proyectos = data;
+      },
+      error: (error) => console.error('Error al cargar proyectos para el desplegable:', error)
+    });
+  }
+
+  comprobarProyectoPreseleccionado() {
+    this.route.queryParams.subscribe(params => {
+      if (params['proyectoId']) {
+        // Si en la URL viene el ID, lo seleccionamos automáticamente en el desplegable
+        this.nuevaImputacion.proyecto.id = Number(params['proyectoId']);
+      }
+    });
   }
 
   cargarUsuarioLogueado() {
     const usuarioObjetoGuardado = localStorage.getItem('usuarioLogueado');
-    
     if (usuarioObjetoGuardado) {
       const usuarioParseado = JSON.parse(usuarioObjetoGuardado);
       this.nuevaImputacion.usuario.id = usuarioParseado.id;
-      console.log('¡Usuario detectado correctamente! ID:', this.nuevaImputacion.usuario.id);
-    } else {
-      console.warn('No se ha encontrado la sesión. Debes iniciar sesión primero.');
     }
   }
 
@@ -54,15 +74,17 @@ export class ImputarPage implements OnInit {
     if (idParam) {
       this.esEdicion = true;
       this.nuevaImputacion.id = Number(idParam);
-      console.log('Modo EDICIÓN activado para la imputación ID:', this.nuevaImputacion.id);
-    } else {
-      console.log('Modo CREACIÓN activado');
     }
   }
 
   guardarImputacion() {
     if (this.nuevaImputacion.usuario.id === 0) {
-      alert('Error: No se ha detectado tu sesión de usuario. Vuelve a iniciar sesión.');
+      alert('Error: No se ha detectado tu sesión de usuario.');
+      return;
+    }
+
+    if (!this.nuevaImputacion.proyecto.id || this.nuevaImputacion.proyecto.id === 0) {
+      alert('Por favor, selecciona un proyecto de la lista.');
       return;
     }
 
@@ -73,29 +95,23 @@ export class ImputarPage implements OnInit {
 
     if (this.esEdicion && this.nuevaImputacion.id) {
       this.imputacionService.actualizarImputacion(this.nuevaImputacion.id, this.nuevaImputacion).subscribe({
-        next: (respuesta) => {
-          console.log('Actualizado:', respuesta);
+        next: () => {
           alert('¡Horas actualizadas con éxito!');
           this.router.navigate(['/inicio']); 
         },
-        error: (error) => {
-          console.error('Error al actualizar:', error);
-          alert('Hubo un error al intentar actualizar la imputación.');
-        }
+        error: () => alert('Hubo un error al actualizar.')
       });
     } else {
       this.imputacionService.crearImputacion(this.nuevaImputacion).subscribe({
-        next: (respuesta) => {
-          console.log('Guardado exitoso:', respuesta);
+        next: () => {
           alert('¡Horas registradas con éxito!');
           this.router.navigate(['/inicio']); 
         },
         error: (error) => {
-          console.error('Error:', error);
           if (error.error && typeof error.error === 'string') {
             alert(error.error);
           } else {
-            alert('Hubo un error al intentar guardar la imputación.');
+            alert('Hubo un error al crear la imputación.');
           }
         }
       });
