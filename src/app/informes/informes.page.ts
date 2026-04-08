@@ -4,10 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { BaseChartDirective } from 'ng2-charts'; 
 import { ChartOptions, Chart, registerables } from 'chart.js';
-import { ImputacionService } from '../services/imputacion.service';
-
-// 1. IMPORTAMOS LA LIBRERÍA DE EXCEL
 import * as XLSX from 'xlsx';
+import { ImputacionService } from '../services/imputacion.service';
 
 Chart.register(...registerables);
 
@@ -22,14 +20,33 @@ export class InformesPage implements OnInit {
 
   private imputacionService = inject(ImputacionService);
 
-  public pieChartOptions: ChartOptions<'pie'> = { /* ... tu config actual ... */ };
+  // --- GRÁFICO 1: HORAS POR PROYECTO (Pie Chart) ---
+  public pieChartOptions: ChartOptions<'pie'> = {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } }
+  };
   public pieChartLabels: string[] = [];
   public pieChartDatasets = [{
     data: [] as number[],
     backgroundColor: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6'], 
   }];
 
-  // 2. VARIABLE PARA GUARDAR LOS DATOS "EN BRUTO"
+  // --- GRÁFICO 2: HORAS POR CLIENTE (Bar Chart) ---
+  public barChartOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    maintainAspectRatio: false, // Permite que se adapte a la altura de la tarjeta
+    plugins: {
+      legend: { display: false } // Quitamos la leyenda porque los nombres ya salen abajo
+    }
+  };
+  public barChartLabels: string[] = [];
+  public barChartDatasets = [{
+    label: 'Horas Totales',
+    data: [] as number[],
+    backgroundColor: ['#3B82F6', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444'], // Colores sólidos
+    borderRadius: 8 // Bordes redondeados de las barras
+  }];
+
   public imputacionesGuardadas: any[] = [];
 
   constructor() { }
@@ -42,54 +59,61 @@ export class InformesPage implements OnInit {
     this.imputacionService.obtenerTodas().subscribe({
       next: (imputaciones) => {
         
-        // GUARDAMOS LOS DATOS ORIGINALES PARA EL EXCEL
         this.imputacionesGuardadas = imputaciones;
 
-        const horasAgrupadas: { [nombreProyecto: string]: number } = {};
+        // Dos "calculadoras" independientes
+        const horasPorProyecto: { [key: string]: number } = {};
+        const horasPorCliente: { [key: string]: number } = {};
 
         imputaciones.forEach(imp => {
-          const nombreProyecto = imp.proyecto && imp.proyecto.nombre ? imp.proyecto.nombre : 'Sin Proyecto';
           const horas = imp.horas || 0;
           
-          if (horasAgrupadas[nombreProyecto]) {
-            horasAgrupadas[nombreProyecto] += horas;
-          } else {
-            horasAgrupadas[nombreProyecto] = horas;
-          }
+          // 1. Agrupar por Proyecto
+          const nombreProyecto = imp.proyecto && imp.proyecto.nombre ? imp.proyecto.nombre : 'Sin Proyecto';
+          horasPorProyecto[nombreProyecto] = (horasPorProyecto[nombreProyecto] || 0) + horas;
+
+          // 2. Agrupar por Cliente (viajamos a través del proyecto)
+          const nombreCliente = imp.proyecto && imp.proyecto.cliente && imp.proyecto.cliente.nombre ? imp.proyecto.cliente.nombre : 'Sin Cliente';
+          horasPorCliente[nombreCliente] = (horasPorCliente[nombreCliente] || 0) + horas;
         });
 
-        this.pieChartLabels = Object.keys(horasAgrupadas);
+        // Inyectar datos al Gráfico 1 (Proyectos)
+        this.pieChartLabels = Object.keys(horasPorProyecto);
         this.pieChartDatasets = [{
           ...this.pieChartDatasets[0],
-          data: Object.values(horasAgrupadas)
+          data: Object.values(horasPorProyecto)
         }];
+
+        // Inyectar datos al Gráfico 2 (Clientes)
+        this.barChartLabels = Object.keys(horasPorCliente);
+        this.barChartDatasets = [{
+          ...this.barChartDatasets[0],
+          data: Object.values(horasPorCliente)
+        }];
+
       },
       error: (err) => { console.error("Error al obtener las imputaciones:", err); }
     });
   }
 
-  // 3. LA FUNCIÓN MÁGICA QUE CREA EL EXCEL
   descargarExcel() {
     if (this.imputacionesGuardadas.length === 0) {
       alert('No hay datos para descargar');
       return;
     }
 
-    // A. "Limpiamos" los datos para que queden bonitos en las columnas de Excel
     const datosParaExcel = this.imputacionesGuardadas.map(imp => ({
       'Fecha': imp.fecha || 'Sin fecha',
       'Usuario': imp.usuario ? imp.usuario.nombre : 'Desconocido',
+      'Cliente': imp.proyecto && imp.proyecto.cliente ? imp.proyecto.cliente.nombre : 'Sin Cliente', // Añadimos Cliente al Excel
       'Proyecto': imp.proyecto ? imp.proyecto.nombre : 'Sin proyecto',
       'Horas Dedicadas': imp.horas || 0,
-      'Comentarios / Tareas': imp.anotaciones || 'Sin comentarios'
+      'Comentarios': imp.anotaciones || 'Sin comentarios'
     }));
 
-    // B. Creamos la hoja de cálculo y el libro
     const hojaDeCalculo: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
     const libroDeTrabajo: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(libroDeTrabajo, hojaDeCalculo, 'Reporte de Horas');
-
-    // C. Forzamos la descarga del archivo en el navegador
     XLSX.writeFile(libroDeTrabajo, 'Informes_Krama.xlsx');
   }
 }
