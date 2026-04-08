@@ -13,6 +13,10 @@ export class ImputacionService {
 
   constructor(private http: HttpClient) { }
 
+  obtenerTodas(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
+
   getImputaciones(): Observable<Imputacion[]> {
     return this.http.get<Imputacion[]>(this.apiUrl);
   }
