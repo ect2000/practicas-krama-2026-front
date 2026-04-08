@@ -53,7 +53,6 @@
         <div class="col-span-5">Proyecto</div>
         <div class="col-span-3 text-center">Horas Presup.</div>
         <div class="col-span-3 text-center">Coste Total</div>
-        <div class="col-span-1 text-center">Acción</div>
       </div>
 
       <div *ngIf="!proyectos || proyectos.length === 0" class="flex flex-col items-center justify-center p-16 text-center">
@@ -81,12 +80,6 @@
             <div class="bg-gray-100 rounded-lg px-4 h-12 flex items-center justify-center w-full text-green-700 font-bold">
               {{ proyecto.costeTotal | currency:'EUR' }}
             </div>
-          </div>
-          
-          <div class="col-span-1 md:col-span-1 flex justify-center md:justify-end">
-            <ion-button fill="clear" color="primary" class="h-12 w-12 rounded-full bg-blue-50" [routerLink]="['/imputar']" [queryParams]="{ proyectoId: proyecto.id }">
-              <ion-icon slot="icon-only" name="arrow-forward-outline"></ion-icon>
-            </ion-button>
           </div>
 
         </div>
