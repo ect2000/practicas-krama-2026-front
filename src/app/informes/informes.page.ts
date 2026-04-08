@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { BaseChartDirective } from 'ng2-charts'; 
 import { ChartOptions, Chart, registerables } from 'chart.js';
-
-// 1. Importamos el servicio
 import { ImputacionService } from '../services/imputacion.service';
+
+// 1. IMPORTAMOS LA LIBRERÍA DE EXCEL
+import * as XLSX from 'xlsx';
 
 Chart.register(...registerables);
 
@@ -19,44 +20,37 @@ Chart.register(...registerables);
 })
 export class InformesPage implements OnInit {
 
-  // 2. Inyectamos el servicio
   private imputacionService = inject(ImputacionService);
 
-  public pieChartOptions: ChartOptions<'pie'> = {
-    responsive: true,
-    plugins: {
-      legend: { position: 'bottom' }
-    }
-  };
-  
-  // 3. Dejamos las etiquetas y los datos vacíos por defecto
+  public pieChartOptions: ChartOptions<'pie'> = { /* ... tu config actual ... */ };
   public pieChartLabels: string[] = [];
   public pieChartDatasets = [{
     data: [] as number[],
-    // Usamos varios colores de base
     backgroundColor: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6'], 
   }];
+
+  // 2. VARIABLE PARA GUARDAR LOS DATOS "EN BRUTO"
+  public imputacionesGuardadas: any[] = [];
 
   constructor() { }
 
   ngOnInit() {
-    // 4. Cargamos los datos reales al entrar a la página
     this.cargarDatosReales();
   }
 
   cargarDatosReales() {
     this.imputacionService.obtenerTodas().subscribe({
       next: (imputaciones) => {
-        // Objeto para sumar horas. Ejemplo final: { "Krama App": 10, "Mercadona": 5 }
+        
+        // GUARDAMOS LOS DATOS ORIGINALES PARA EL EXCEL
+        this.imputacionesGuardadas = imputaciones;
+
         const horasAgrupadas: { [nombreProyecto: string]: number } = {};
 
-        // 5. Recorremos todas las imputaciones devueltas por tu backend
         imputaciones.forEach(imp => {
-          // Buscamos el nombre del proyecto (si no existe, lo llamamos 'Sin Proyecto')
           const nombreProyecto = imp.proyecto && imp.proyecto.nombre ? imp.proyecto.nombre : 'Sin Proyecto';
           const horas = imp.horas || 0;
           
-          // Sumamos las horas al proyecto correspondiente
           if (horasAgrupadas[nombreProyecto]) {
             horasAgrupadas[nombreProyecto] += horas;
           } else {
@@ -64,18 +58,38 @@ export class InformesPage implements OnInit {
           }
         });
 
-        // 6. Actualizamos las variables del gráfico con los resultados calculados
-        this.pieChartLabels = Object.keys(horasAgrupadas); // Los nombres
+        this.pieChartLabels = Object.keys(horasAgrupadas);
         this.pieChartDatasets = [{
           ...this.pieChartDatasets[0],
-          data: Object.values(horasAgrupadas) // Los números
+          data: Object.values(horasAgrupadas)
         }];
-
-        console.log("Datos del gráfico procesados:", horasAgrupadas);
       },
-      error: (err) => {
-        console.error("Error al obtener las imputaciones:", err);
-      }
+      error: (err) => { console.error("Error al obtener las imputaciones:", err); }
     });
+  }
+
+  // 3. LA FUNCIÓN MÁGICA QUE CREA EL EXCEL
+  descargarExcel() {
+    if (this.imputacionesGuardadas.length === 0) {
+      alert('No hay datos para descargar');
+      return;
+    }
+
+    // A. "Limpiamos" los datos para que queden bonitos en las columnas de Excel
+    const datosParaExcel = this.imputacionesGuardadas.map(imp => ({
+      'Fecha': imp.fecha || 'Sin fecha',
+      'Usuario': imp.usuario ? imp.usuario.nombre : 'Desconocido',
+      'Proyecto': imp.proyecto ? imp.proyecto.nombre : 'Sin proyecto',
+      'Horas Dedicadas': imp.horas || 0,
+      'Comentarios / Tareas': imp.anotaciones || 'Sin comentarios'
+    }));
+
+    // B. Creamos la hoja de cálculo y el libro
+    const hojaDeCalculo: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
+    const libroDeTrabajo: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libroDeTrabajo, hojaDeCalculo, 'Reporte de Horas');
+
+    // C. Forzamos la descarga del archivo en el navegador
+    XLSX.writeFile(libroDeTrabajo, 'Informes_Krama.xlsx');
   }
 }

@@ -10,9 +10,16 @@
 <ion-content class="bg-gray-50">
   <div class="max-w-6xl mx-auto p-4 md:p-6">
     
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-gray-800">Resumen de Actividad</h1>
-      <p class="text-gray-500">Visualiza el rendimiento y las horas imputadas en tus proyectos.</p>
+    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">Resumen de Actividad</h1>
+        <p class="text-gray-500">Visualiza el rendimiento y descarga los registros de trabajo.</p>
+      </div>
+      
+      <ion-button color="success" shape="round" class="font-bold shadow-lg h-12" (click)="descargarExcel()">
+        <ion-icon slot="start" name="document-text-outline"></ion-icon>
+        Exportar Excel
+      </ion-button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
