@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// Importamos todas las piezas visuales necesarias
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonList, IonItem, IonIcon, IonLabel, IonButton } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
 import { ProyectoService } from '../services/proyecto.service';
+import { NotificacionService } from '../services/notificaciones.service';
+
+// Aquí están las dos importaciones necesarias que solucionan el error:
 
 @Component({
   selector: 'app-notificaciones',
@@ -19,44 +21,50 @@ export class NotificacionesPage {
   notificaciones: any[] = [];
   cargando: boolean = true;
 
-  constructor(private proyectoService: ProyectoService) { }
+  // Declaramos los servicios para poder usarlos
+  constructor(
+    private proyectoService: ProyectoService,
+    private notificacionService: NotificacionService 
+  ) { }
 
-  // Se ejecuta cada vez que la pantalla se hace visible
   ionViewWillEnter() {
     this.verificarAjustes();
   }
 
   verificarAjustes() {
     const alertaGuardada = localStorage.getItem('alertaPresupuesto');
-    // Si no hay nada guardado, asumimos true por defecto
     this.alertasActivas = alertaGuardada === null ? true : alertaGuardada === 'true';
 
     if (this.alertasActivas) {
       this.cargarAlertas();
     } else {
       this.cargando = false;
-      this.notificaciones = []; // Limpiamos la lista si las apagó
+      this.notificaciones = [];
     }
   }
 
   cargarAlertas() {
     this.cargando = true;
+    this.notificaciones = []; 
     
-    // Llamamos a tu backend para traer los proyectos
+    // 1. Cargar las notificaciones de las imputaciones ("Usuario X ha añadido 10 h...")
+    this.notificacionService.obtenerNotificaciones().subscribe({
+      next: (notasBackend) => {
+        this.notificaciones.push(...notasBackend);
+      },
+      error: (err) => console.error('Error cargando notificaciones del server', err)
+    });
+
+    // 2. Cargar las alertas de presupuestos
     this.proyectoService.obtenerProyectos().subscribe({
       next: (proyectos) => {
-        this.notificaciones = []; // Vaciamos la lista vieja
-        
         proyectos.forEach((proyecto: any) => {
-          // Extraemos las horas (Asegúrate de que estos nombres coinciden con tu backend)
-          // Si tu backend usa otros nombres (ej. horas_estimadas), cámbialos aquí
           const horasEstimadas = proyecto.horasEstimadas || 100; 
           const horasImputadas = proyecto.horasImputadas || 0;
           
           if (horasEstimadas > 0) {
             const porcentaje = (horasImputadas / horasEstimadas) * 100;
 
-            // Alerta ROJA: Se ha pasado del 100%
             if (porcentaje >= 100) {
               this.notificaciones.push({
                 titulo: `¡Presupuesto superado!`,
@@ -64,9 +72,7 @@ export class NotificacionesPage {
                 color: 'danger',
                 icono: 'alert-circle'
               });
-            } 
-            // Alerta AMARILLA: Está al 80% o más
-            else if (porcentaje >= 80) {
+            } else if (porcentaje >= 80) {
               this.notificaciones.push({
                 titulo: `Aviso de límite de horas`,
                 mensaje: `El proyecto "${proyecto.nombre}" está al ${porcentaje.toFixed(0)}%. Quedan ${horasEstimadas - horasImputadas}h disponibles.`,
