@@ -13,30 +13,22 @@ export class ImputacionService {
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * Obtiene todas las imputaciones (útil para las vistas de administrador o informes)
-   */
   getImputaciones(): Observable<Imputacion[]> {
     return this.http.get<Imputacion[]>(this.apiUrl);
   }
 
-  /**
-   * Obtiene las imputaciones de un usuario específico (útil para la tabla principal del usuario)
-   */
   getImputacionesByUsuario(idUsuario: number): Observable<Imputacion[]> {
     return this.http.get<Imputacion[]>(`${this.apiUrl}/usuario/${idUsuario}`);
   }
 
-  /**
-   * Crea una nueva imputación de horas en la base de datos
-   */
   crearImputacion(imputacion: Imputacion): Observable<Imputacion> {
     return this.http.post<Imputacion>(this.apiUrl, imputacion);
   }
 
-  /**
-   * Elimina una imputación existente
-   */
+  actualizarImputacion(id: number, imputacion: Imputacion): Observable<Imputacion> {
+    return this.http.put<Imputacion>(`${this.apiUrl}/${id}`, imputacion);
+  }
+
   eliminarImputacion(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

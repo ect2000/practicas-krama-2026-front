@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title class="font-bold tracking-wide">Imputar</ion-title>
+    <ion-title class="font-bold tracking-wide">Inicio - Proyectos</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -43,44 +43,49 @@
     <div class="flex justify-end mb-4">
       <ion-button routerLink="/imputar" shape="round" color="primary" class="font-bold shadow-lg h-12 px-4">
         <ion-icon slot="start" name="add-outline"></ion-icon>
-        Vincular Proyecto
+        Imputar horas
       </ion-button>
     </div>
 
     <div *ngIf="vistaActual === 'dia'" class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
       
       <div class="hidden md:grid grid-cols-12 gap-4 bg-gray-50 p-5 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs tracking-wider">
-        <div class="col-span-4">Proyecto</div>
-        <div class="col-span-2 text-center">Horas</div>
-        <div class="col-span-5">Comentarios</div>
-        <div class="col-span-1 text-center"></div>
+        <div class="col-span-5">Proyecto</div>
+        <div class="col-span-3 text-center">Horas Presup.</div>
+        <div class="col-span-3 text-center">Coste Total</div>
+        <div class="col-span-1 text-center">Acción</div>
       </div>
 
-      <div *ngIf="proyectosVinculados.length === 0" class="flex flex-col items-center justify-center p-16 text-center">
+      <div *ngIf="!proyectos || proyectos.length === 0" class="flex flex-col items-center justify-center p-16 text-center">
         <ion-icon name="folder-open-outline" class="text-7xl text-gray-300 mb-4"></ion-icon>
         <h3 class="text-2xl font-bold text-gray-700">No hay proyectos vinculados</h3>
-        <p class="text-gray-500 mt-2 text-lg">Haz clic en "Vincular Proyecto" para empezar a registrar tus horas del día.</p>
+        <p class="text-gray-500 mt-2 text-lg">No tienes proyectos asignados actualmente.</p>
       </div>
-      <div *ngIf="proyectosVinculados.length > 0">
+
+      <div *ngIf="proyectos && proyectos.length > 0">
         
-        <div *ngFor="let proyecto of proyectosVinculados" class="grid grid-cols-1 md:grid-cols-12 gap-4 p-5 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors">
+        <div *ngFor="let proyecto of proyectos" class="grid grid-cols-1 md:grid-cols-12 gap-4 p-5 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors">
           
-          <div class="col-span-1 md:col-span-4 font-semibold text-gray-800 text-lg">
+          <div class="col-span-1 md:col-span-5 font-semibold text-gray-800 text-lg">
             <ion-icon name="folder-open-outline" class="text-primary mr-2 align-middle"></ion-icon>
             {{ proyecto.nombre }}
           </div>
           
-          <div class="col-span-1 md:col-span-2">
-            <ion-input type="number" placeholder="0" class="bg-gray-100 rounded-lg text-center font-bold h-12"></ion-input>
+          <div class="col-span-1 md:col-span-3 flex justify-center">
+            <div class="bg-gray-100 rounded-lg px-4 h-12 flex items-center justify-center w-full text-gray-700 font-bold">
+              {{ proyecto.horasPresupuestadas }} h
+            </div>
           </div>
           
-          <div class="col-span-1 md:col-span-5">
-            <ion-input type="text" placeholder="¿Qué tareas has realizado?" class="bg-gray-100 rounded-lg px-4 h-12"></ion-input>
+          <div class="col-span-1 md:col-span-3 flex justify-center">
+            <div class="bg-gray-100 rounded-lg px-4 h-12 flex items-center justify-center w-full text-green-700 font-bold">
+              {{ proyecto.costeTotal | currency:'EUR' }}
+            </div>
           </div>
           
           <div class="col-span-1 md:col-span-1 flex justify-center md:justify-end">
-            <ion-button fill="clear" color="primary" class="h-12 w-12 rounded-full bg-blue-50">
-              <ion-icon slot="icon-only" name="save-outline"></ion-icon>
+            <ion-button fill="clear" color="primary" class="h-12 w-12 rounded-full bg-blue-50" [routerLink]="['/imputar']" [queryParams]="{ proyectoId: proyecto.id }">
+              <ion-icon slot="icon-only" name="arrow-forward-outline"></ion-icon>
             </ion-button>
           </div>
 
