@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonMenuButton, 
   IonButtons, IonButton, IonIcon, IonItem, IonLabel, IonInput, 
@@ -70,15 +69,15 @@ export class UsuariosPage implements OnInit {
   }
 
   abrirFormularioEditar(usuario: any) {
-    // 1. Extraemos el ID del único cliente (si tiene)
-    const clienteId = usuario.cliente ? usuario.cliente.id : null;
+    // 1. Extraemos los IDs de los MÚLTIPLES clientes
+    const clientesIds = usuario.clientes ? usuario.clientes.map((c: any) => c.id) : [];
     const proyectosIds = usuario.proyectos ? usuario.proyectos.map((p: any) => p.id) : [];
 
-    this.usuarioForm = { ...usuario, clienteId, proyectosIds };
+    this.usuarioForm = { ...usuario, clientesIds, proyectosIds };
     this.editando = true;
     this.mostrandoFormulario = true;
     
-    // Filtramos los proyectos para que coincidan con su cliente
+    // Filtramos los proyectos para que coincidan con sus clientes
     this.alCambiarCliente();
   }
 
@@ -87,23 +86,24 @@ export class UsuariosPage implements OnInit {
   }
 
   resetearFormulario() {
-    // Cambiamos permisos por 'rol' y clientesIds por 'clienteId'
-    return { nombre: '', apellidos: '', email: '', telefono: '', rol: '', clienteId: null, proyectosIds: [] };
+    // Cambiamos clienteId por clientesIds inicializado como un array vacío
+    return { nombre: '', apellidos: '', email: '', telefono: '', rol: '', clientesIds: [], proyectosIds: [] };
   }
 
-  // Cambiamos el nombre de la función para reflejar que es un solo cliente
+  // Ahora soporta múltiples clientes seleccionados
   alCambiarCliente() {
-    const idCliente = this.usuarioForm.clienteId;
+    const idsClientes = this.usuarioForm.clientesIds || [];
     
-    if (!idCliente) {
+    if (idsClientes.length === 0) {
       this.proyectosVisibles = [...this.proyectos];
     } else {
-      // Filtramos proyectos que pertenezcan a ese único cliente
+      // Filtramos proyectos que pertenezcan a ALGUNO de los clientes seleccionados
       this.proyectosVisibles = this.proyectos.filter(proyecto => 
-        proyecto.cliente && proyecto.cliente.id === idCliente
+        proyecto.cliente && idsClientes.includes(proyecto.cliente.id)
       );
     }
     
+    // Si algún proyecto seleccionado ya no pertenece a los clientes elegidos, lo quitamos
     if (this.usuarioForm.proyectosIds) {
       this.usuarioForm.proyectosIds = this.usuarioForm.proyectosIds.filter((id: number) => 
         this.proyectosVisibles.some(pv => pv.id === id)
@@ -112,21 +112,18 @@ export class UsuariosPage implements OnInit {
   }
 
   guardarUsuario() {
-    // AHORA SÍ: Construimos el objeto EXACTO que espera Spring Boot
+    // Construimos el objeto para Spring Boot (Enviando una lista de clientes)
     const datosParaAPI = {
       id: this.usuarioForm.id,
       nombre: this.usuarioForm.nombre,
       apellidos: this.usuarioForm.apellidos,
       email: this.usuarioForm.email,
       telefono: this.usuarioForm.telefono,
-      
-      // Enviamos 'rol' en lugar de 'permisos'
       rol: this.usuarioForm.rol, 
       
-      // Enviamos UN SOLO objeto cliente (si seleccionó alguno), o null
-      cliente: this.usuarioForm.clienteId ? { id: this.usuarioForm.clienteId } : null,
+      // Enviamos el array de clientes en formato [{id: 1}, {id: 2}]
+      clientes: (this.usuarioForm.clientesIds || []).map((id: number) => ({ id: id })),
       
-      // Los proyectos siguen siendo múltiples
       proyectos: (this.usuarioForm.proyectosIds || []).map((id: number) => ({ id: id }))
     };
 
@@ -138,7 +135,7 @@ export class UsuariosPage implements OnInit {
         },
         error: (err) => {
           console.error('Error del servidor al actualizar:', err);
-          alert('No se pudo actualizar el usuario. Abre la consola para ver el error.');
+          alert('No se pudo actualizar el usuario.');
         }
       });
     } else {
@@ -149,7 +146,7 @@ export class UsuariosPage implements OnInit {
         },
         error: (err) => {
           console.error('Error del servidor al crear:', err);
-          alert('No se pudo guardar el usuario. Abre la consola para ver el error.');
+          alert('No se pudo guardar el usuario.');
         }
       });
     }

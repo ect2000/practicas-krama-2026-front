@@ -80,7 +80,7 @@
           </ion-item>
 
           <ion-item class="mb-2 border rounded-xl bg-gray-50">
-            <ion-select label="Cliente" labelPlacement="floating" [(ngModel)]="usuarioForm.clienteId" (ionChange)="alCambiarCliente()">
+            <ion-select label="Clientes" labelPlacement="floating" [multiple]="true" [(ngModel)]="usuarioForm.clientesIds" (ionChange)="alCambiarCliente()">
               @for (cliente of clientes; track cliente.id) {
                 <ion-select-option [value]="cliente.id">{{ cliente.nombre }}</ion-select-option>
               }
