@@ -6,6 +6,8 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartOptions, Chart, registerables } from 'chart.js';
 import * as XLSX from 'xlsx';
 import { ImputacionService } from '../services/imputacion.service';
+import { UsuarioService } from '../services/usuario.service';
+import { ProyectoService } from '../services/proyecto.service';
 
 Chart.register(...registerables);
 
@@ -19,6 +21,14 @@ Chart.register(...registerables);
 export class InformesPage implements OnInit {
 
   private imputacionService = inject(ImputacionService);
+  private usuarioService = inject(UsuarioService);
+  private proyectoService = inject(ProyectoService);
+
+  // --- NUEVAS VARIABLES PARA EL INFORME 1 ---
+  usuariosParaFiltro: any[] = [];
+  proyectosParaFiltro: any[] = [];
+  usuariosSeleccionados: number[] = [];
+  proyectosSeleccionados: number[] = [];
 
   // --- GRÁFICO 1: HORAS POR PROYECTO (Pie Chart) ---
   public pieChartOptions: ChartOptions<'pie'> = {
@@ -53,7 +63,75 @@ export class InformesPage implements OnInit {
 
   ngOnInit() {
     this.cargarDatosReales();
+    this.cargarFiltros(); // Llamamos a cargar las listas para los desplegables
   }
+
+  // ---> NUEVOS MÉTODOS PARA EL INFORME 1 <---
+
+  cargarFiltros() {
+    this.usuarioService.obtenerUsuarios().subscribe({ next: (data) => this.usuariosParaFiltro = data });
+    this.proyectoService.obtenerProyectos().subscribe({ next: (data) => this.proyectosParaFiltro = data });
+  }
+
+  generarInforme1() {
+    if (this.usuariosSeleccionados.length === 0 || this.proyectosSeleccionados.length === 0) {
+      alert('Por favor, selecciona al menos un usuario y un proyecto.');
+      return;
+    }
+
+    this.imputacionService.obtenerInforme1(this.usuariosSeleccionados, this.proyectosSeleccionados)
+      .subscribe({
+        next: (datosDelServidor) => {
+          this.descargarExcelInforme1(datosDelServidor);
+        },
+        error: (err) => {
+          console.error("Error al obtener Informe 1:", err);
+          alert('Hubo un error al generar el informe.');
+        }
+      });
+  }
+
+  descargarExcelInforme1(imputaciones: any[]) {
+    if (imputaciones.length === 0) {
+      alert('No hay imputaciones que coincidan con estos filtros.');
+      return;
+    }
+
+    // Aquí hacemos la magia matemática para calcular costes y porcentajes
+    const datosParaExcel = imputaciones.map(imp => {
+      const horasPresupuestadas = imp.proyecto?.horasPresupuestadas || 0;
+      const costeTotal = imp.proyecto?.costeTotal || 0;
+      const horasTrabajadas = imp.horas || 0;
+
+      let porcentajeConsumido = 0;
+      let presupuestoGastado = 0;
+
+      // Evitamos dividir por cero si un proyecto no tiene horas presupuestadas configuradas
+      if (horasPresupuestadas > 0) {
+        porcentajeConsumido = (horasTrabajadas / horasPresupuestadas) * 100;
+        presupuestoGastado = (horasTrabajadas / horasPresupuestadas) * costeTotal;
+      }
+
+      return {
+        'Fecha': imp.fecha || 'Sin fecha',
+        'Cliente': imp.proyecto?.cliente?.nombre || 'Sin cliente',
+        'Proyecto': imp.proyecto?.nombre || 'Sin proyecto',
+        'Usuario': imp.usuario?.nombre || 'Desconocido',
+        'Horas Imputadas': horasTrabajadas,
+        'Horas Totales Proyecto': horasPresupuestadas,
+        '% Consumido sobre total': porcentajeConsumido.toFixed(2) + ' %',
+        'Presupuesto Proporcional (€)': presupuestoGastado.toFixed(2),
+        'Comentarios': imp.anotaciones || ''
+      };
+    });
+
+    const hojaDeCalculo: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
+    const libroDeTrabajo: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libroDeTrabajo, hojaDeCalculo, 'Informe 1 Filtrado');
+    XLSX.writeFile(libroDeTrabajo, 'Informe_Krama_Avanzado.xlsx');
+  }
+
+  // ---> FIN DE NUEVOS MÉTODOS <---
 
   cargarDatosReales() {
     this.imputacionService.obtenerTodas().subscribe({

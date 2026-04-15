@@ -21,6 +21,36 @@
       </ion-button>
     </div>
 
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Informe 1: Filtro Avanzado y Costes</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-select label="Selecciona Usuarios" multiple="true" [(ngModel)]="usuariosSeleccionados">
+            <ion-select-option *ngFor="let u of usuariosParaFiltro" [value]="u.id">
+              {{u.nombre}} {{u.apellidos}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <ion-item>
+          <ion-select label="Selecciona Proyectos" multiple="true" [(ngModel)]="proyectosSeleccionados">
+            <ion-select-option *ngFor="let p of proyectosParaFiltro" [value]="p.id">
+              {{p.nombre}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="block" color="primary" class="ion-margin-top" (click)="generarInforme1()">
+        <ion-icon name="download-outline" slot="start"></ion-icon>
+        Descargar Informe 1 (Excel)
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       
       <div class="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 flex flex-col items-center">
