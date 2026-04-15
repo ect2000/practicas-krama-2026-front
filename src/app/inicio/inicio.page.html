@@ -26,18 +26,22 @@
 
       <div class="flex items-center justify-between w-full xl:w-auto px-4">
         
-        <ion-button (click)="navegar('anterior')" fill="clear" color="primary" class="m-0 h-12 w-12 bg-gray-50 rounded-full hover:bg-gray-200">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-        </ion-button>
+        <button (click)="navegar('anterior')" class="flex items-center justify-center m-0 h-12 w-12 bg-gray-50 text-blue-600 rounded-full hover:bg-gray-200 shadow-sm border border-gray-200 transition-all active:scale-95 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+        </button>
         
         <div class="flex items-center gap-2 text-gray-800 font-extrabold text-lg min-w-[200px] justify-center capitalize">
           <ion-icon name="calendar-clear-outline" class="text-blue-600"></ion-icon>
           <span>{{ textoFecha }}</span>
         </div>
 
-        <ion-button (click)="navegar('siguiente')" fill="clear" color="primary" class="m-0 h-12 w-12 bg-gray-50 rounded-full hover:bg-gray-200">
-          <ion-icon name="arrow-forward-outline"></ion-icon>
-        </ion-button>
+        <button (click)="navegar('siguiente')" class="flex items-center justify-center m-0 h-12 w-12 bg-gray-50 text-blue-600 rounded-full hover:bg-gray-200 shadow-sm border border-gray-200 transition-all active:scale-95 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </button>
 
       </div>
     </div>
