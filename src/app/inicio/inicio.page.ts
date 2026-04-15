@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 1. NUEVO: Importamos ChangeDetectorRef
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router'; 
@@ -29,14 +29,17 @@ export class InicioPage implements OnInit {
 
   constructor(
     private proyectoService: ProyectoService,
-    private imputacionService: ImputacionService
+    private imputacionService: ImputacionService,
+    private cdr: ChangeDetectorRef 
   ) { }
 
   ngOnInit() {
+    this.actualizarTextoFecha(); 
     this.cargarUsuarioYDatos();
   }
 
   ionViewWillEnter() {
+    this.actualizarTextoFecha(); 
     this.cargarUsuarioYDatos();
   }
 
@@ -89,6 +92,7 @@ export class InicioPage implements OnInit {
   actualizarVista() {
     this.filtrarYCalcular();
     this.actualizarTextoFecha();
+    this.cdr.detectChanges(); // 4. NUEVO: Forzamos a la pantalla a repintar las variables visuales
   }
 
   filtrarYCalcular() {
@@ -132,7 +136,6 @@ export class InicioPage implements OnInit {
   // --- UTILIDADES PARA EVITAR ERRORES DE ZONA HORARIA ---
 
   private parsearFecha(fechaInput: any): Date {
-    // Si es un string "YYYY-MM-DD", crearlo como fecha local para evitar desfase de 1 día
     if (typeof fechaInput === 'string' && fechaInput.includes('-')) {
       const parts = fechaInput.split('T')[0].split('-').map(Number);
       return new Date(parts[0], parts[1] - 1, parts[2]);

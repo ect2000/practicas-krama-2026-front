@@ -35,9 +35,14 @@
             label="Fecha"
             labelPlacement="stacked"
             type="date" 
-            [(ngModel)]="nuevaImputacion.fecha">
-          </ion-input>
+            [(ngModel)]="nuevaImputacion.fecha"
+            (ngModelChange)="calcularHorasDelDia()"> </ion-input>
         </ion-item>
+
+        <div *ngIf="horasTotalesDia > 0" class="px-2 mb-4 text-sm text-gray-600 font-medium">
+          <ion-icon name="time-outline" class="align-middle"></ion-icon>
+          Ya tienes <span class="text-blue-600 font-bold">{{ horasTotalesDia }} horas</span> registradas en esta fecha.
+        </div>
 
         <ion-item class="mb-4 border rounded-xl bg-gray-50">
           <ion-input 
