@@ -39,6 +39,11 @@ export class ImputacionService {
     return this.http.get<any[]>(`${this.apiUrl}/informe2`, { params });
   }
 
+  obtenerInforme3(clienteId: number): Observable<any[]> {
+    let params = new HttpParams().set('clienteId', clienteId.toString());
+    return this.http.get<any[]>(`${this.apiUrl}/informe3`, { params });
+  }
+
   getImputaciones(): Observable<Imputacion[]> {
     return this.http.get<Imputacion[]>(this.apiUrl);
   }
