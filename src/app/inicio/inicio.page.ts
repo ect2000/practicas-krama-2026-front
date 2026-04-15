@@ -96,7 +96,7 @@ export class InicioPage implements OnInit {
   actualizarVista() {
     this.filtrarYCalcular();
     this.actualizarTextoFecha();
-    this.cdr.detectChanges(); // 4. NUEVO: Forzamos a la pantalla a repintar las variables visuales
+    this.cdr.detectChanges(); 
   }
 
   filtrarYCalcular() {
