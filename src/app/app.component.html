@@ -1,12 +1,11 @@
 <ion-app>
-  
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
         <ion-list id="inbox-list">
           <ion-list-header>Krama Front e-Soft</ion-list-header>
           <ion-note>Proyecto Practicas</ion-note>
 
-          @for (p of appPages; track p.title; let i = $index) {
+          @for (p of paginasVisibles; track p.title; let i = $index) {
             <ion-menu-toggle auto-hide="false">
               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
@@ -14,9 +13,9 @@
               </ion-item>
             </ion-menu-toggle>
           }
+
         </ion-list>
-        
-        </ion-content>
+      </ion-content>
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

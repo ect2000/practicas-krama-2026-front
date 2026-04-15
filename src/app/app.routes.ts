@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard, adminGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -9,54 +10,67 @@ export const routes: Routes = [
   },
   {
     path: 'inicio',
-    loadComponent: () => import('./inicio/inicio.page').then( m => m.InicioPage)
+    loadComponent: () => import('./inicio/inicio.page').then( m => m.InicioPage),
+    canActivate: [authGuard]
   },
   {
     path: 'login',
-    loadComponent: () => import('./login/login.page').then( m => m.LoginPage)
+    loadComponent: () => import('./login/login.page').then( m => m.LoginPage),
   },
   {
     path: 'estimaciones',
-    loadComponent: () => import('./estimaciones/estimaciones.page').then( m => m.EstimacionesPage)
+    loadComponent: () => import('./estimaciones/estimaciones.page').then( m => m.EstimacionesPage),
+    canActivate: [authGuard]
   },
   {
     path: 'imputar',
-    loadComponent: () => import('./imputar/imputar.page').then( m => m.ImputarPage)
+    loadComponent: () => import('./imputar/imputar.page').then( m => m.ImputarPage),
+    canActivate: [authGuard]
   },
   {
     path: 'acerca',
-    loadComponent: () => import('./acerca/acerca.page').then( m => m.AcercaPage)
+    loadComponent: () => import('./acerca/acerca.page').then( m => m.AcercaPage),
+    canActivate: [authGuard]
   },
   {
     path: 'perfil',
-    loadComponent: () => import('./perfil/perfil.page').then( m => m.PerfilPage)
+    loadComponent: () => import('./perfil/perfil.page').then( m => m.PerfilPage),
+    canActivate: [authGuard]
   },
   {
     path: 'proyectos',
-    loadComponent: () => import('./proyectos/proyectos.page').then( m => m.ProyectosPage)
+    loadComponent: () => import('./proyectos/proyectos.page').then( m => m.ProyectosPage),
+    canActivate: [authGuard]
   },
   {
     path: 'ajustes',
-    loadComponent: () => import('./ajustes/ajustes.page').then( m => m.AjustesPage)
+    loadComponent: () => import('./ajustes/ajustes.page').then( m => m.AjustesPage),
+    canActivate: [authGuard]
   },
   {
     path: 'notificaciones',
-    loadComponent: () => import('./notificaciones/notificaciones.page').then( m => m.NotificacionesPage)
+    loadComponent: () => import('./notificaciones/notificaciones.page').then( m => m.NotificacionesPage),
+    canActivate: [authGuard]
   },
   {
     path: 'informes',
-    loadComponent: () => import('./informes/informes.page').then( m => m.InformesPage)
+    loadComponent: () => import('./informes/informes.page').then( m => m.InformesPage),
+    canActivate: [authGuard]
   },
   {
     path: 'clientes',
-    loadComponent: () => import('./clientes/clientes.page').then( m => m.ClientesPage)
+    loadComponent: () => import('./clientes/clientes.page').then( m => m.ClientesPage),
+    canActivate: [authGuard]
   },
   {
     path: 'usuarios',
-    loadComponent: () => import('./usuarios/usuarios.page').then( m => m.UsuariosPage)
-  },  {
+    loadComponent: () => import('./usuarios/usuarios.page').then( m => m.UsuariosPage),
+    canActivate: [authGuard]
+  },
+  {
     path: 'cambiar-password',
-    loadComponent: () => import('./cambiar-password/cambiar-password.page').then( m => m.CambiarPasswordPage)
+    loadComponent: () => import('./cambiar-password/cambiar-password.page').then( m => m.CambiarPasswordPage),
+    canActivate: [authGuard]
   },
 
 

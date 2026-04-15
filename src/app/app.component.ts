@@ -13,8 +13,9 @@ import {
   folderOutline, folderSharp, 
   settingsOutline, settingsSharp, 
   informationCircleOutline, informationCircleSharp,
-  logOutOutline, logOutSharp, // Para un futuro botón de cerrar sesión
-  logInOutline,logInSharp
+  logOutOutline, logOutSharp, 
+  logInOutline, logInSharp,
+  barChartOutline, barChartSharp // <-- AÑADIDOS LOS ICONOS PARA "INFORMES"
 } from 'ionicons/icons';
 
 @Component({
@@ -26,24 +27,26 @@ import {
 })
 export class AppComponent {
   
-  // 2. Definimos las páginas exigidas en el documento Krama
+  // 2. Definimos las páginas exigidas en el documento Krama (¡Ahora sí, idénticas a tu imagen!)
   public appPages = [
-    { title: 'Tabla principal', url: '/inicio', icon: 'home' },
-    { title: 'Informes', url: '/informes', icon: 'document-text' },
+    { title: 'Inicio', url: '/inicio', icon: 'home' },
+    // --- Opciones de Configuración ---
+    { title: 'Usuarios', url: '/usuarios', icon: 'people' },
+    { title: 'Clientes', url: '/clientes', icon: 'briefcase' },
+    { title: 'Proyectos', url: '/proyectos', icon: 'folder' },
+    // ---------------------------------
+    { title: 'Informes', url: '/informes', icon: 'bar-chart' },
     { title: 'Notificaciones', url: '/notificaciones', icon: 'notifications' },
-    { title: 'Config. Usuarios', url: '/usuarios', icon: 'people' },
-    { title: 'Config. Clientes', url: '/clientes', icon: 'briefcase' },
-    { title: 'Config. Proyectos', url: '/proyectos', icon: 'folder' },
-    { title: 'Ajustes', url: '/ajustes', icon: 'settings' },
+    { title: 'Ajustes', url: '/ajustes', icon: 'settings' }, // <-- AÑADIDO AJUSTES
     { title: 'Acerca de', url: '/acerca', icon: 'information-circle' }
   ];
 
   constructor() {
     const temaGuardado = localStorage.getItem('modoOscuro');
     if (temaGuardado === 'true') {
-      // Usamos document.documentElement aquí también
       document.documentElement.classList.add('ion-palette-dark'); 
     }
+    
     // 3. Registramos los iconos para que Ionic los dibuje en el HTML
     addIcons({ 
       homeOutline, homeSharp, 
@@ -55,7 +58,34 @@ export class AppComponent {
       settingsOutline, settingsSharp, 
       informationCircleOutline, informationCircleSharp,
       logOutOutline, logOutSharp,
-      logInOutline,logInSharp
+      logInOutline, logInSharp,
+      barChartOutline, barChartSharp // <-- REGISTRADOS LOS DE INFORMES
+    });
+  }
+
+  get esAdmin(): boolean {
+    // ⚠️ CAMBIA 'usuarioLogueado' por la palabra exacta que viste en el F12
+    const usuarioStr = localStorage.getItem('usuarioLogueado'); 
+    
+    if (usuarioStr) {
+      const usuario = JSON.parse(usuarioStr);
+      
+      // Asegurarnos de que el rol existe y pasarlo a mayúsculas para que 'admin', 'Admin' y 'ADMIN' funcionen igual
+      const nombreDelRol = usuario.rol ? usuario.rol.toUpperCase() : '';
+      
+      return nombreDelRol === 'ADMIN' || nombreDelRol === 'ADMINISTRADOR'; 
+    }
+    return false;
+  }
+
+  get paginasVisibles() {
+    return this.appPages.filter(pagina => {
+      // Si la página es de configuración, solo se muestra si el usuario es Admin
+      if (pagina.url === '/usuarios' || pagina.url === '/clientes' || pagina.url === '/proyectos') {
+        return this.esAdmin;
+      }
+      // El resto de páginas se muestran siempre
+      return true; 
     });
   }
 }
