@@ -30,6 +30,10 @@ export class InformesPage implements OnInit {
   usuariosSeleccionados: number[] = [];
   proyectosSeleccionados: number[] = [];
 
+  // --- VARIABLES PARA INFORME 2 ---
+  usuarioSeleccionadoInf2: number | null = null;
+  mesSeleccionadoInf2: string = '';
+
   // --- GRÁFICO 1: HORAS POR PROYECTO (Pie Chart) ---
   public pieChartOptions: ChartOptions<'pie'> = {
     responsive: true,
@@ -129,6 +133,59 @@ export class InformesPage implements OnInit {
     const libroDeTrabajo: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(libroDeTrabajo, hojaDeCalculo, 'Informe 1 Filtrado');
     XLSX.writeFile(libroDeTrabajo, 'Informe_Krama_Avanzado.xlsx');
+  }
+
+  // ---> MÉTODOS PARA EL INFORME 2 <---
+  generarInforme2() {
+    if (!this.usuarioSeleccionadoInf2 || !this.mesSeleccionadoInf2) {
+      alert('Por favor, selecciona un usuario y un mes para el Informe 2.');
+      return;
+    }
+
+    // El input 'month' devuelve formato "YYYY-MM" (ej. "2024-05")
+    const [year, month] = this.mesSeleccionadoInf2.split('-');
+    
+    // Calculamos el primer y último día del mes para mandarlo al backend
+    const fechaInicio = `${year}-${month}-01`;
+    // Truco matemático en JS: Si pides el día 0 del mes siguiente, te da el último día del mes actual
+    const ultimoDia = new Date(parseInt(year), parseInt(month), 0).getDate();
+    const fechaFin = `${year}-${month}-${ultimoDia.toString().padStart(2, '0')}`;
+
+    this.imputacionService.obtenerInforme2(this.usuarioSeleccionadoInf2, fechaInicio, fechaFin)
+      .subscribe({
+        next: (datos) => this.descargarExcelInforme2(datos),
+        error: (err) => {
+          console.error("Error al obtener Informe 2:", err);
+          alert('Hubo un error al generar el informe mensual.');
+        }
+      });
+  }
+
+  descargarExcelInforme2(imputaciones: any[]) {
+    if (imputaciones.length === 0) {
+      alert('No hay imputaciones (ni de trabajo ni de baja) para este usuario en el mes seleccionado.');
+      return;
+    }
+
+    const datosParaExcel = imputaciones.map(imp => {
+      // Calculamos si es un proyecto normal o si es la "Baja" para destacarlo
+      const nombreProyecto = imp.proyecto?.nombre || 'Sin proyecto';
+      const esAbsentismo = nombreProyecto.toLowerCase().includes('baja') ? 'SÍ (Baja/Absentismo)' : 'NO';
+
+      return {
+        'Fecha': imp.fecha || 'Sin fecha',
+        'Cliente': imp.proyecto?.cliente?.nombre || 'Sin cliente',
+        'Proyecto': nombreProyecto,
+        'Horas': imp.horas || 0,
+        '¿Es Absentismo?': esAbsentismo,
+        'Comentarios': imp.anotaciones || ''
+      };
+    });
+
+    const hojaDeCalculo: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
+    const libroDeTrabajo: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libroDeTrabajo, hojaDeCalculo, 'Rendimiento Mensual');
+    XLSX.writeFile(libroDeTrabajo, `Rendimiento_${this.mesSeleccionadoInf2}.xlsx`);
   }
 
   // ---> FIN DE NUEVOS MÉTODOS <---
