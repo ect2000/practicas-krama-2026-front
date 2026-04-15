@@ -71,16 +71,18 @@ export class InicioPage implements OnInit {
   navegar(direccion: 'anterior' | 'siguiente') {
     const factor = direccion === 'anterior' ? -1 : 1;
     
+    // Clonamos la fecha para no mutar directamente la referencia original antes de tiempo
+    const nuevaFecha = new Date(this.fechaBase);
+
     if (this.vistaActual === 'dia') {
-      this.fechaBase.setDate(this.fechaBase.getDate() + factor);
+      nuevaFecha.setDate(nuevaFecha.getDate() + factor);
     } else if (this.vistaActual === 'semana') {
-      this.fechaBase.setDate(this.fechaBase.getDate() + (7 * factor));
+      nuevaFecha.setDate(nuevaFecha.getDate() + (7 * factor));
     } else if (this.vistaActual === 'mes') {
-      this.fechaBase.setMonth(this.fechaBase.getMonth() + factor);
+      nuevaFecha.setMonth(nuevaFecha.getMonth() + factor);
     }
     
-    // Forzamos la actualización de la referencia de la fecha
-    this.fechaBase = new Date(this.fechaBase); 
+    this.fechaBase = nuevaFecha; 
     this.actualizarVista();
   }
 
@@ -90,22 +92,33 @@ export class InicioPage implements OnInit {
   }
 
   filtrarYCalcular() {
-    // 1. Filtramos las horas que pertenecen al periodo visualizado
+    // 1. Filtrar imputaciones
     this.imputacionesFiltradas = this.todasImputaciones.filter(imp => {
-      const fechaImp = new Date(imp.fecha);
-      if (this.vistaActual === 'dia') return this.esMismoDia(fechaImp, this.fechaBase);
-      if (this.vistaActual === 'semana') return this.esMismaSemana(fechaImp, this.fechaBase);
-      if (this.vistaActual === 'mes') return this.esMismoMes(fechaImp, this.fechaBase);
+      // Normalizamos la fecha de la imputación (quitamos horas/minutos)
+      const fechaImp = this.parsearFecha(imp.fecha);
+      
+      if (this.vistaActual === 'dia') {
+        return this.esMismoDia(fechaImp, this.fechaBase);
+      } else if (this.vistaActual === 'semana') {
+        return this.esMismaSemana(fechaImp, this.fechaBase);
+      } else if (this.vistaActual === 'mes') {
+        return this.esMismoMes(fechaImp, this.fechaBase);
+      }
       return false;
     });
 
-    // 2. Calculamos el total de horas asegurándonos de que se sumen como números
-    this.totalHorasPeriodo = this.imputacionesFiltradas.reduce((sum, imp) => sum + (Number(imp.horas) || 0), 0);
+    // 2. Cálculo matemático exacto
+    this.totalHorasPeriodo = this.imputacionesFiltradas.reduce((sum, imp) => {
+      const h = Number(imp.horas);
+      return sum + (isNaN(h) ? 0 : h);
+    }, 0);
   }
 
   actualizarTextoFecha() {
+    const opciones: any = { weekday: 'long', day: 'numeric', month: 'short' };
+    
     if (this.vistaActual === 'dia') {
-      this.textoFecha = this.fechaBase.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' });
+      this.textoFecha = this.fechaBase.toLocaleDateString('es-ES', opciones);
     } else if (this.vistaActual === 'semana') {
       const inicio = this.getInicioSemana(this.fechaBase);
       const fin = new Date(inicio);
@@ -116,14 +129,26 @@ export class InicioPage implements OnInit {
     }
   }
 
-  // --- MÉTODOS DE CÁLCULO DE FECHAS ---
+  // --- UTILIDADES PARA EVITAR ERRORES DE ZONA HORARIA ---
+
+  private parsearFecha(fechaInput: any): Date {
+    // Si es un string "YYYY-MM-DD", crearlo como fecha local para evitar desfase de 1 día
+    if (typeof fechaInput === 'string' && fechaInput.includes('-')) {
+      const parts = fechaInput.split('T')[0].split('-').map(Number);
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    return new Date(fechaInput);
+  }
 
   private esMismoDia(d1: Date, d2: Date) {
-    return d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
+    return d1.getDate() === d2.getDate() && 
+           d1.getMonth() === d2.getMonth() && 
+           d1.getFullYear() === d2.getFullYear();
   }
 
   private esMismoMes(d1: Date, d2: Date) {
-    return d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
+    return d1.getMonth() === d2.getMonth() && 
+           d1.getFullYear() === d2.getFullYear();
   }
 
   private esMismaSemana(d1: Date, d2: Date) {
@@ -135,9 +160,9 @@ export class InicioPage implements OnInit {
   }
 
   private getInicioSemana(fecha: Date) {
-    const d = new Date(fecha);
+    const d = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
     const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Lunes como inicio
     d.setDate(diff);
     d.setHours(0, 0, 0, 0);
     return d;
