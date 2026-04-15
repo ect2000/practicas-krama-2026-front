@@ -26,7 +26,7 @@
 
       <div class="flex items-center justify-between w-full xl:w-auto px-4">
         
-        <button (click)="navegar('anterior')" class="flex items-center justify-center m-0 h-12 w-12 bg-gray-50 text-blue-600 rounded-full hover:bg-gray-200 shadow-sm border border-gray-200 transition-all active:scale-95 cursor-pointer">
+        <button type="button" (click)="navegar('anterior')" class="flex items-center justify-center m-0 h-12 w-12 bg-gray-50 text-blue-600 rounded-full hover:bg-gray-200 shadow-sm border border-gray-200 transition-all active:scale-95 cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
@@ -37,7 +37,7 @@
           <span>{{ textoFecha }}</span>
         </div>
 
-        <button (click)="navegar('siguiente')" class="flex items-center justify-center m-0 h-12 w-12 bg-gray-50 text-blue-600 rounded-full hover:bg-gray-200 shadow-sm border border-gray-200 transition-all active:scale-95 cursor-pointer">
+        <button type="button" (click)="navegar('siguiente')" class="flex items-center justify-center m-0 h-12 w-12 bg-gray-50 text-blue-600 rounded-full hover:bg-gray-200 shadow-sm border border-gray-200 transition-all active:scale-95 cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
           </svg>
@@ -48,9 +48,9 @@
 
     <div class="flex justify-between items-center mb-4 px-2">
       <div class="text-gray-600 font-bold text-lg flex items-center gap-2">
-        Total del periodo: 
+        Total horas: 
         <span class="bg-blue-200 text-blue-700 px-4 py-2 rounded-xl text-x1 border border-blue-200">
-          {{ totalHorasPeriodo }} h
+          {{ totalHoras }} h
         </span>
       </div>
       <ion-button routerLink="/imputar" shape="round" color="primary" class="font-bold h-12 px-4 ">

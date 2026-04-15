@@ -25,7 +25,7 @@ export class InicioPage implements OnInit {
   usuarioLogueado: any = null;
   todasImputaciones: Imputacion[] = [];
   imputacionesFiltradas: Imputacion[] = [];
-  totalHorasPeriodo: number = 0;
+  totalHoras: number = 0;
 
   constructor(
     private proyectoService: ProyectoService,
@@ -72,9 +72,10 @@ export class InicioPage implements OnInit {
   }
 
   navegar(direccion: 'anterior' | 'siguiente') {
-    const factor = direccion === 'anterior' ? -1 : 1;
+    // 1. Chivato en la consola para saber si el clic llega
+    console.log('>>> Clic detectado. Navegando hacia:', direccion);
     
-    // Clonamos la fecha para no mutar directamente la referencia original antes de tiempo
+    const factor = direccion === 'anterior' ? -1 : 1;
     const nuevaFecha = new Date(this.fechaBase);
 
     if (this.vistaActual === 'dia') {
@@ -87,6 +88,9 @@ export class InicioPage implements OnInit {
     
     this.fechaBase = nuevaFecha; 
     this.actualizarVista();
+
+    // 2. Chivato para ver si el cálculo se ha hecho bien
+    console.log('>>> Nueva fecha calculada:', this.textoFecha);
   }
 
   actualizarVista() {
@@ -112,7 +116,7 @@ export class InicioPage implements OnInit {
     });
 
     // 2. Cálculo matemático exacto
-    this.totalHorasPeriodo = this.imputacionesFiltradas.reduce((sum, imp) => {
+    this.totalHoras = this.imputacionesFiltradas.reduce((sum, imp) => {
       const h = Number(imp.horas);
       return sum + (isNaN(h) ? 0 : h);
     }, 0);
