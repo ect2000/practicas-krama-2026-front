@@ -121,6 +121,9 @@ export class UsuariosPage implements OnInit {
       telefono: this.usuarioForm.telefono,
       rol: this.usuarioForm.rol, 
       
+      // Mantenemos la contraseña original para que no se pierda al viajar
+      password: this.usuarioForm.password, 
+      
       // Enviamos el array de clientes en formato [{id: 1}, {id: 2}]
       clientes: (this.usuarioForm.clientesIds || []).map((id: number) => ({ id: id })),
       
