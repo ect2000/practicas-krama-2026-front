@@ -46,13 +46,13 @@ export class LoginPage implements OnInit {
 
     // Llamamos a nuestro backend
     this.authService.iniciarSesion(credenciales).subscribe({
-      next: (usuario) => {
-        console.log('¡Login correcto! Bienvenido:', usuario);
+      next: (respuestaServidor) => {
+        // Guardamos los datos
+        localStorage.setItem('usuarioLogueado', JSON.stringify(respuestaServidor.usuario));
+        // ¡GUARDAMOS LA PULSERA!
+        localStorage.setItem('token_krama', respuestaServidor.token); 
         
-        localStorage.setItem('usuarioLogueado', JSON.stringify(usuario));
-        
-        // Si entra bien, lo mandamos a la página de inicio
-        this.router.navigate(['/inicio']); 
+        this.router.navigate(['/inicio']);
       },
       error: (error) => {
         // 3. Si el backend devuelve un error (ej. contraseña incorrecta)

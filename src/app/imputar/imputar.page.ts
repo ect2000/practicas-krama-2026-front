@@ -24,11 +24,13 @@ export class ImputarPage implements OnInit {
     anotaciones: ''
   };
 
-  // ¡NUEVO! Variable plana para que el selector funcione perfectamente
   proyectoSeleccionadoId: number | null = null;
-
   esEdicion: boolean = false; 
   proyectos: any[] = []; 
+
+  // NUEVAS VARIABLES PARA EL CONTROL DE HORAS
+  horasTotalesDia: number = 0;
+  imputacionesDelUsuario: Imputacion[] = [];
 
   constructor(
     private imputacionService: ImputacionService,
@@ -42,21 +44,20 @@ export class ImputarPage implements OnInit {
     this.comprobarSiEsEdicion();
     this.cargarProyectos(); 
     this.comprobarProyectoPreseleccionado(); 
+    // Cargamos el historial de horas al iniciar
+    this.cargarImputacionesUsuario();
   }
 
   cargarProyectos() {
     this.proyectoService.obtenerProyectos().subscribe({
-      next: (data) => {
-        this.proyectos = data;
-      },
-      error: (error) => console.error('Error al cargar proyectos para el desplegable:', error)
+      next: (data) => this.proyectos = data,
+      error: (error) => console.error('Error al cargar proyectos:', error)
     });
   }
 
   comprobarProyectoPreseleccionado() {
     this.route.queryParams.subscribe(params => {
       if (params['proyectoId']) {
-        // Asignamos a nuestra variable plana
         this.proyectoSeleccionadoId = Number(params['proyectoId']);
       }
     });
@@ -78,15 +79,40 @@ export class ImputarPage implements OnInit {
     }
   }
 
+  // NUEVA FUNCIÓN: Descarga todas las imputaciones del usuario logueado
+  cargarImputacionesUsuario() {
+    if (this.nuevaImputacion.usuario.id && this.nuevaImputacion.usuario.id !== 0) {
+      this.imputacionService.getImputacionesByUsuario(this.nuevaImputacion.usuario.id).subscribe({
+        next: (data) => {
+          this.imputacionesDelUsuario = data;
+          // Calculamos las horas para el día actual por defecto
+          this.calcularHorasDelDia();
+        },
+        error: (error) => console.error('Error al cargar imputaciones del usuario', error)
+      });
+    }
+  }
+
+  // NUEVA FUNCIÓN: Filtra y suma las horas del día seleccionado
+  calcularHorasDelDia() {
+    const fechaSeleccionada = this.nuevaImputacion.fecha;
+    
+    // Filtramos las imputaciones que coinciden con la fecha elegida
+    const imputacionesHoy = this.imputacionesDelUsuario.filter(
+      (imp) => imp.fecha === fechaSeleccionada && imp.id !== this.nuevaImputacion.id // Excluimos la actual si estamos editando
+    );
+
+    // Sumamos las horas de ese día
+    this.horasTotalesDia = imputacionesHoy.reduce((total, imp) => total + imp.horas, 0);
+  }
+
   guardarImputacion() {
-    // 1. Pasamos el dato de la pantalla a nuestro objeto final
     if (this.proyectoSeleccionadoId) {
       this.nuevaImputacion.proyecto.id = Number(this.proyectoSeleccionadoId);
     } else {
-      this.nuevaImputacion.proyecto.id = 0; // Provoca el error de validación abajo si está vacío
+      this.nuevaImputacion.proyecto.id = 0; 
     }
 
-    // 2. Validaciones habituales
     if (this.nuevaImputacion.usuario.id === 0) {
       alert('Error: No se ha detectado tu sesión de usuario.');
       return;
@@ -107,7 +133,12 @@ export class ImputarPage implements OnInit {
       return;
     }
 
-    // 3. Guardado
+    // Opcional: Validar que no se pase de 24 horas al día
+    if ((this.horasTotalesDia + this.nuevaImputacion.horas) > 24) {
+      alert(`¡Cuidado! Ya tienes ${this.horasTotalesDia} horas registradas este día. El total superaría las 24 horas.`);
+      return;
+    }
+
     if (this.esEdicion && this.nuevaImputacion.id) {
       this.imputacionService.actualizarImputacion(this.nuevaImputacion.id, this.nuevaImputacion).subscribe({
         next: () => {

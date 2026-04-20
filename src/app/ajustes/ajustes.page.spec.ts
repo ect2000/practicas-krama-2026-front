@@ -1,11 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AjustesPage } from './ajustes.page';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AjustesPage', () => {
   let component: AjustesPage;
   let fixture: ComponentFixture<AjustesPage>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [AjustesPage, RouterTestingModule]
+    }).compileComponents();
+
     fixture = TestBed.createComponent(AjustesPage);
     component = fixture.componentInstance;
     fixture.detectChanges();

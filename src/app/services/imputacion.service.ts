@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Imputacion } from '../models/imputacion.model';
 import { environment } from '../../environments/environment';
@@ -15,6 +15,33 @@ export class ImputacionService {
 
   obtenerTodas(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
+  }
+
+  obtenerInforme1(usuariosIds: number[], proyectosIds: number[]): Observable<any[]> {
+    let params = new HttpParams();
+    
+    if (usuariosIds && usuariosIds.length > 0) {
+      params = params.append('usuarios', usuariosIds.join(','));
+    }
+    if (proyectosIds && proyectosIds.length > 0) {
+      params = params.append('proyectos', proyectosIds.join(','));
+    }
+    
+    return this.http.get<any[]>(`${this.apiUrl}/informe1`, { params });
+  }
+
+  obtenerInforme2(usuarioId: number, fechaInicio: string, fechaFin: string): Observable<any[]> {
+    let params = new HttpParams()
+      .set('usuarioId', usuarioId.toString())
+      .set('fechaInicio', fechaInicio)
+      .set('fechaFin', fechaFin);
+      
+    return this.http.get<any[]>(`${this.apiUrl}/informe2`, { params });
+  }
+
+  obtenerInforme3(clienteId: number): Observable<any[]> {
+    let params = new HttpParams().set('clienteId', clienteId.toString());
+    return this.http.get<any[]>(`${this.apiUrl}/informe3`, { params });
   }
 
   getImputaciones(): Observable<Imputacion[]> {
