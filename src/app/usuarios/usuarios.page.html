@@ -80,7 +80,7 @@
           </ion-item>
 
           <ion-item class="mb-2 border rounded-xl bg-gray-50">
-            <ion-select label="Clientes" labelPlacement="floating" [multiple]="true" [(ngModel)]="usuarioForm.clientesIds" (ionChange)="alCambiarCliente()">
+            <ion-select label="Clientes" labelPlacement="floating" [multiple]="true" [(ngModel)]="usuarioForm.clientesIds" (ionChange)="onClientesCambian()">
               @for (cliente of clientes; track cliente.id) {
                 <ion-select-option [value]="cliente.id">{{ cliente.nombre }}</ion-select-option>
               }
@@ -89,7 +89,7 @@
 
           <ion-item class="mb-4 border rounded-xl bg-gray-50">
             <ion-select label="Proyectos Vinculados" labelPlacement="floating" [multiple]="true" [(ngModel)]="usuarioForm.proyectosIds">
-              @for (proyecto of proyectosVisibles; track proyecto.id) {
+              @for (proyecto of proyectosFiltrados; track proyecto.id) {
                 <ion-select-option [value]="proyecto.id">{{ proyecto.nombre }}</ion-select-option>
               }
             </ion-select>

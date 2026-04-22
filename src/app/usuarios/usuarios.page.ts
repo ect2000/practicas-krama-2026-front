@@ -29,7 +29,6 @@ export class UsuariosPage implements OnInit {
   usuarios: any[] = []; 
   clientes: Cliente[] = [];
   proyectos: Proyecto[] = [];
-  proyectosVisibles: Proyecto[] = [];
 
   mostrandoFormulario = false;
   editando = false;
@@ -56,29 +55,23 @@ export class UsuariosPage implements OnInit {
     this.clienteService.obtenerClientes().subscribe({ next: (d) => this.clientes = d });
   }
   obtenerProyectos() {
-    this.proyectoService.obtenerProyectos().subscribe({ 
-      next: (d) => { this.proyectos = d; this.proyectosVisibles = d; }
-    });
+    this.proyectoService.obtenerProyectos().subscribe({ next: (d) => this.proyectos = d });
   }
 
   abrirFormularioCrear() {
     this.usuarioForm = this.resetearFormulario();
-    this.proyectosVisibles = [...this.proyectos];
     this.editando = false;
     this.mostrandoFormulario = true;
   }
 
   abrirFormularioEditar(usuario: any) {
-    // 1. Extraemos los IDs de los MÚLTIPLES clientes
+    // Extraemos los IDs de los MÚLTIPLES clientes y proyectos
     const clientesIds = usuario.clientes ? usuario.clientes.map((c: any) => c.id) : [];
     const proyectosIds = usuario.proyectos ? usuario.proyectos.map((p: any) => p.id) : [];
 
     this.usuarioForm = { ...usuario, clientesIds, proyectosIds };
     this.editando = true;
     this.mostrandoFormulario = true;
-    
-    // Filtramos los proyectos para que coincidan con sus clientes
-    this.alCambiarCliente();
   }
 
   cerrarFormulario() {
@@ -86,33 +79,35 @@ export class UsuariosPage implements OnInit {
   }
 
   resetearFormulario() {
-    // Cambiamos clienteId por clientesIds inicializado como un array vacío
     return { nombre: '', apellidos: '', email: '', telefono: '', rol: '', clientesIds: [], proyectosIds: [] };
   }
 
-  // Ahora soporta múltiples clientes seleccionados
-  alCambiarCliente() {
-    const idsClientes = this.usuarioForm.clientesIds || [];
-    
-    if (idsClientes.length === 0) {
-      this.proyectosVisibles = [...this.proyectos];
-    } else {
-      // Filtramos proyectos que pertenezcan a ALGUNO de los clientes seleccionados
-      this.proyectosVisibles = this.proyectos.filter(proyecto => 
-        proyecto.cliente && idsClientes.includes(proyecto.cliente.id)
-      );
+  // ---> 1. EL GETTER (Filtro Inteligente en tiempo real) <---
+  get proyectosFiltrados() {
+    if (!this.usuarioForm.clientesIds || this.usuarioForm.clientesIds.length === 0) {
+      return []; 
     }
     
-    // Si algún proyecto seleccionado ya no pertenece a los clientes elegidos, lo quitamos
-    if (this.usuarioForm.proyectosIds) {
+    return this.proyectos.filter(proyecto => {
+      if (proyecto.cliente && proyecto.cliente.id) {
+        return this.usuarioForm.clientesIds.includes(proyecto.cliente.id);
+      }
+      return false; 
+    });
+  }
+
+  // ---> 2. FUNCIÓN DE LIMPIEZA AUTOMÁTICA <---
+  onClientesCambian() {
+    if (this.usuarioForm.proyectosIds && this.usuarioForm.proyectosIds.length > 0) {
+      // Dejamos solo los IDs de los proyectos que sigan siendo válidos
+      const idsValidos = this.proyectosFiltrados.map(p => p.id);
       this.usuarioForm.proyectosIds = this.usuarioForm.proyectosIds.filter((id: number) => 
-        this.proyectosVisibles.some(pv => pv.id === id)
+        idsValidos.includes(id)
       );
     }
   }
 
   guardarUsuario() {
-    // Construimos el objeto para Spring Boot (Enviando una lista de clientes)
     const datosParaAPI = {
       id: this.usuarioForm.id,
       nombre: this.usuarioForm.nombre,
@@ -120,13 +115,8 @@ export class UsuariosPage implements OnInit {
       email: this.usuarioForm.email,
       telefono: this.usuarioForm.telefono,
       rol: this.usuarioForm.rol, 
-      
-      // Mantenemos la contraseña original para que no se pierda al viajar
       password: this.usuarioForm.password, 
-      
-      // Enviamos el array de clientes en formato [{id: 1}, {id: 2}]
       clientes: (this.usuarioForm.clientesIds || []).map((id: number) => ({ id: id })),
-      
       proyectos: (this.usuarioForm.proyectosIds || []).map((id: number) => ({ id: id }))
     };
 
