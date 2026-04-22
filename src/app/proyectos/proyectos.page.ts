@@ -28,7 +28,7 @@ export class ProyectosPage implements OnInit {
   proyectos: Proyecto[] = []; 
   clientes: Cliente[] = [];
   usuarios: any[] = [];
-  usuariosAdmin: any[] = []; // Sublista para los encargados (Solo Admins)
+  usuariosAdmin: any[] = []; 
 
   isModalOpen = false;
   editando = false;
@@ -51,6 +51,7 @@ export class ProyectosPage implements OnInit {
   obtenerProyectos() {
     this.proyectoService.obtenerProyectos().subscribe({ next: (d) => this.proyectos = d });
   }
+  
   obtenerClientes() {
     this.clienteService.obtenerClientes().subscribe({ next: (d) => this.clientes = d });
   }
@@ -59,7 +60,6 @@ export class ProyectosPage implements OnInit {
     this.usuarioService.obtenerUsuarios().subscribe({ 
       next: (d) => { 
         this.usuarios = d; 
-        // Filtramos para obtener solo los administradores para el campo de Encargado
         this.usuariosAdmin = d.filter((u: any) => u.rol === 'ADMIN');
       } 
     });
@@ -82,7 +82,7 @@ export class ProyectosPage implements OnInit {
       encargadoId, 
       usuariosIds,
       horasPresupuestadas: proyecto.horasPresupuestadas || null,
-      presupuesto: proyecto.costeTotal || null
+      costeTotal: proyecto.costeTotal || null 
     }; 
     
     this.editando = true;
@@ -102,8 +102,17 @@ export class ProyectosPage implements OnInit {
       encargadoId: null, 
       usuariosIds: [],
       horasPresupuestadas: null,
-      presupuesto: null
+      costeTotal: null
     };
+  }
+
+  // ---> NUEVA FUNCIÓN PARA FORMATEAR EL DINERO <---
+  formatearMoneda(valor: any): string {
+    if (valor === null || valor === undefined || valor === '') {
+      return 'Sin definir';
+    }
+    // Convierte el número aplicando el formato de España (punto para miles, coma para decimales)
+    return Number(valor).toLocaleString('es-ES') + ' €';
   }
 
   guardarProyecto() {
@@ -113,7 +122,7 @@ export class ProyectosPage implements OnInit {
       codigo: this.proyectoForm.codigo,
       descripcion: this.proyectoForm.descripcion,
       horasPresupuestadas: this.proyectoForm.horasPresupuestadas, 
-      costeTotal: this.proyectoForm.presupuesto,                 
+      costeTotal: this.proyectoForm.costeTotal,                 
       cliente: this.proyectoForm.clienteId ? { id: this.proyectoForm.clienteId } : null,
       encargado: this.proyectoForm.encargadoId ? { id: this.proyectoForm.encargadoId } : null,
       usuarios: this.proyectoForm.usuariosIds && this.proyectoForm.usuariosIds.length > 0 

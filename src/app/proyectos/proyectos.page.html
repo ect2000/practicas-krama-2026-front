@@ -45,7 +45,7 @@
 
             <div class="col-span-1 md:col-span-2 text-center text-emerald-600 font-semibold bg-emerald-50 rounded-lg py-1">
               <span class="md:hidden font-bold mr-1 text-gray-400">Coste:</span>
-              {{ proyecto.costeTotal ? proyecto.costeTotal + ' €' : 'Sin definir' }}
+              {{ formatearMoneda(proyecto.costeTotal) }}
             </div>
 
             <div class="col-span-1 md:col-span-2 text-gray-500 truncate">
