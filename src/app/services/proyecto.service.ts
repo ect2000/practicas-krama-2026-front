@@ -8,10 +8,13 @@ export interface Proyecto {
   nombre: string;
   codigo?: string;
   descripcion?: string;
-  costeTotal?: number; 
+  costeTotal?: number;
   horasPresupuestadas?: number;
-  cliente?: any;
+  cliente?: any; // O la interface Cliente si la tienes
   usuarios?: any[];
+  
+  // ---> AÑADE ESTA LÍNEA <---
+  encargado?: any; 
 }
 
 @Injectable({

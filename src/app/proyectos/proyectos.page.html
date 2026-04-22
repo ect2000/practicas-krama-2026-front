@@ -21,26 +21,32 @@
 
       <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
         <div class="hidden md:grid grid-cols-12 gap-4 bg-gray-50 p-5 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs tracking-wider">
-          <div class="col-span-3">Código</div>
-          <div class="col-span-4">Nombre del Proyecto</div>
+          <div class="col-span-2">Código</div>
+          <div class="col-span-3">Proyecto</div>
           <div class="col-span-3">Cliente</div>
-          <div class="col-span-2 text-center">Acciones</div>
+          <div class="col-span-2">Encargado</div> <div class="col-span-2 text-center">Acciones</div>
         </div>
 
         <div class="flex flex-col">
           @for (proyecto of proyectos; track proyecto.id) {
             <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center">
-              <div class="col-span-1 md:col-span-3 text-indigo-600 font-bold font-mono">
+              <div class="col-span-1 md:col-span-2 text-indigo-600 font-bold font-mono">
                 <span class="md:hidden font-normal text-gray-400">Código (ID):</span>
                 #{{ proyecto.id }}
               </div>
-              <div class="col-span-1 md:col-span-4 font-bold text-gray-800 text-lg md:text-base">
+              <div class="col-span-1 md:col-span-3 font-bold text-gray-800 text-lg md:text-base">
                 {{ proyecto.nombre }}
               </div>
               <div class="col-span-1 md:col-span-3 text-gray-500">
                 <span class="md:hidden font-bold mr-1 text-gray-400">Cliente:</span>
-                {{ proyecto.cliente?.nombre || 'Sin cliente asignado' }}
+                {{ proyecto.cliente?.nombre || 'Sin cliente' }}
               </div>
+              
+              <div class="col-span-1 md:col-span-2 text-gray-700 italic">
+                <span class="md:hidden font-bold mr-1 text-gray-400">Encargado:</span>
+                {{ proyecto.encargado ? (proyecto.encargado.nombre + ' ' + proyecto.encargado.apellidos) : 'No asignado' }}
+              </div>
+
               <div class="col-span-1 md:col-span-2 text-center mt-2 md:mt-0">
                 <ion-button fill="clear" color="primary" (click)="abrirFormularioEditar(proyecto)">
                   <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
@@ -85,6 +91,15 @@
               <ion-select-option [value]="null">Ninguno</ion-select-option>
               @for (cliente of clientes; track cliente.id) {
                 <ion-select-option [value]="cliente.id">{{ cliente.nombre }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <ion-item class="mb-2 border rounded-xl bg-gray-50">
+            <ion-select label="Encargado del Proyecto (Responsable)" labelPlacement="floating" [(ngModel)]="proyectoForm.encargadoId">
+              <ion-select-option [value]="null">Sin encargado</ion-select-option>
+              @for (usuario of usuarios; track usuario.id) {
+                <ion-select-option [value]="usuario.id">{{ usuario.nombre }} {{ usuario.apellidos }} ({{ usuario.rol }})</ion-select-option>
               }
             </ion-select>
           </ion-item>

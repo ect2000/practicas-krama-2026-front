@@ -64,8 +64,12 @@ export class ProyectosPage implements OnInit {
 
   abrirFormularioEditar(proyecto: any) {
     const clienteId = proyecto.cliente ? proyecto.cliente.id : null;
+    // ---> NUEVO: Extraemos el ID del encargado <---
+    const encargadoId = proyecto.encargado ? proyecto.encargado.id : null; 
     const usuariosIds = proyecto.usuarios ? proyecto.usuarios.map((u: any) => u.id) : [];
-    this.proyectoForm = { ...proyecto, clienteId, usuariosIds };
+    
+    // Añadimos encargadoId al objeto del formulario
+    this.proyectoForm = { ...proyecto, clienteId, encargadoId, usuariosIds }; 
     this.editando = true;
     this.mostrandoFormulario = true;
   }
@@ -75,7 +79,8 @@ export class ProyectosPage implements OnInit {
   }
 
   resetearFormulario() {
-    return { nombre: '', codigo: '', descripcion: '', clienteId: null, usuariosIds: [] };
+    // ---> NUEVO: Añadido encargadoId: null <---
+    return { nombre: '', codigo: '', descripcion: '', clienteId: null, encargadoId: null, usuariosIds: [] };
   }
 
   guardarProyecto() {
@@ -85,6 +90,8 @@ export class ProyectosPage implements OnInit {
       codigo: this.proyectoForm.codigo,
       descripcion: this.proyectoForm.descripcion,
       cliente: this.proyectoForm.clienteId ? { id: this.proyectoForm.clienteId } : null,
+      // ---> NUEVO: Enviamos el encargado al Backend <---
+      encargado: this.proyectoForm.encargadoId ? { id: this.proyectoForm.encargadoId } : null,
       usuarios: this.proyectoForm.usuariosIds && this.proyectoForm.usuariosIds.length > 0 
                 ? this.proyectoForm.usuariosIds.map((id: number) => ({ id: id })) 
                 : []
