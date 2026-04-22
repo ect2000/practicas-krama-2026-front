@@ -82,7 +82,7 @@ export class ProyectosPage implements OnInit {
       encargadoId, 
       usuariosIds,
       horasPresupuestadas: proyecto.horasPresupuestadas || null,
-      presupuesto: proyecto.presupuesto || null
+      presupuesto: proyecto.costeTotal || null
     }; 
     
     this.editando = true;
@@ -113,7 +113,7 @@ export class ProyectosPage implements OnInit {
       codigo: this.proyectoForm.codigo,
       descripcion: this.proyectoForm.descripcion,
       horasPresupuestadas: this.proyectoForm.horasPresupuestadas, 
-      presupuesto: this.proyectoForm.presupuesto,                 
+      costeTotal: this.proyectoForm.presupuesto,                 
       cliente: this.proyectoForm.clienteId ? { id: this.proyectoForm.clienteId } : null,
       encargado: this.proyectoForm.encargadoId ? { id: this.proyectoForm.encargadoId } : null,
       usuarios: this.proyectoForm.usuariosIds && this.proyectoForm.usuariosIds.length > 0 
