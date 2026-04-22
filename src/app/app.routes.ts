@@ -23,11 +23,6 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'imputar',
-    loadComponent: () => import('./imputar/imputar.page').then( m => m.ImputarPage),
-    canActivate: [authGuard]
-  },
-  {
     path: 'acerca',
     loadComponent: () => import('./acerca/acerca.page').then( m => m.AcercaPage),
     canActivate: [authGuard]
