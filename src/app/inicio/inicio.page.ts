@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 1. NUEVO: Importamos ChangeDetectorRef
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router'; 
@@ -27,6 +27,19 @@ export class InicioPage implements OnInit {
   imputacionesFiltradas: Imputacion[] = [];
   totalHoras: number = 0;
 
+  // NUEVAS VARIABLES PARA EL MODAL Y BÚSQUEDA
+  isModalOpen: boolean = false;
+  proyectos: any[] = [];
+  proyectosFiltrados: any[] = [];
+  
+  nuevaImputacion: Imputacion = {
+    proyecto: { id: 0 }, 
+    usuario: { id: 0 }, 
+    fecha: new Date().toISOString().split('T')[0], 
+    horas: null as any, 
+    anotaciones: ''
+  };
+
   constructor(
     private proyectoService: ProyectoService,
     private imputacionService: ImputacionService,
@@ -47,6 +60,7 @@ export class InicioPage implements OnInit {
     const userStr = localStorage.getItem('usuarioLogueado');
     if (userStr) {
       this.usuarioLogueado = JSON.parse(userStr);
+      this.nuevaImputacion.usuario.id = this.usuarioLogueado.id;
       this.cargarImputaciones();
     }
   }
@@ -72,7 +86,6 @@ export class InicioPage implements OnInit {
   }
 
   navegar(direccion: 'anterior' | 'siguiente') {
-    // 1. Chivato en la consola para saber si el clic llega
     console.log('>>> Clic detectado. Navegando hacia:', direccion);
     
     const factor = direccion === 'anterior' ? -1 : 1;
@@ -89,7 +102,6 @@ export class InicioPage implements OnInit {
     this.fechaBase = nuevaFecha; 
     this.actualizarVista();
 
-    // 2. Chivato para ver si el cálculo se ha hecho bien
     console.log('>>> Nueva fecha calculada:', this.textoFecha);
   }
 
@@ -135,6 +147,74 @@ export class InicioPage implements OnInit {
     } else if (this.vistaActual === 'mes') {
       this.textoFecha = this.fechaBase.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
     }
+  }
+
+  // --- NUEVA LÓGICA PARA EL MODAL Y VINCULACIÓN ---
+
+  cargarProyectos() {
+    this.proyectoService.obtenerProyectos().subscribe({
+      next: (data) => {
+        this.proyectos = data;
+        this.proyectosFiltrados = data;
+      },
+      error: (error) => console.error('Error al cargar proyectos:', error)
+    });
+  }
+
+  buscarProyecto(event: any) {
+    const query = event.detail.value.toLowerCase();
+    this.proyectosFiltrados = this.proyectos.filter(
+      p => p.nombre.toLowerCase().indexOf(query) > -1 || p.id.toString().indexOf(query) > -1
+    );
+  }
+
+  abrirModal() {
+    // Ajustar la fecha a la vista actual
+    // Extraemos la parte de la fecha (YYYY-MM-DD) corrigiendo posibles temas de zona horaria
+    const offset = this.fechaBase.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(this.fechaBase.getTime() - offset)).toISOString().split('T')[0];
+    
+    this.nuevaImputacion.fecha = localISOTime;
+    this.isModalOpen = true;
+    
+    if (this.proyectos.length === 0) {
+      this.cargarProyectos();
+    }
+  }
+
+  cerrarModal() {
+    this.isModalOpen = false;
+    // Resetear formulario
+    this.nuevaImputacion.horas = null as any;
+    this.nuevaImputacion.anotaciones = '';
+    this.nuevaImputacion.proyecto.id = 0;
+  }
+
+  guardarImputacion() {
+    if (!this.nuevaImputacion.proyecto.id || this.nuevaImputacion.proyecto.id === 0) {
+      alert('Por favor, selecciona un proyecto.');
+      return;
+    }
+    
+    if (this.nuevaImputacion.horas === null || this.nuevaImputacion.horas <= 0) {
+      alert('Por favor, introduce una cantidad válida de horas dedicadas.');
+      return;
+    }
+
+    this.imputacionService.crearImputacion(this.nuevaImputacion).subscribe({
+      next: () => {
+        alert('¡Horas registradas con éxito!');
+        this.cerrarModal();
+        this.cargarImputaciones(); // Refrescar la tabla al instante
+      },
+      error: (err) => {
+        if (err.error && typeof err.error === 'string') {
+            alert(err.error);
+        } else {
+            alert('Hubo un error al crear la imputación.');
+        }
+      }
+    });
   }
 
   // --- UTILIDADES PARA EVITAR ERRORES DE ZONA HORARIA ---

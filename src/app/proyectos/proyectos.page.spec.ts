@@ -14,7 +14,7 @@ describe('ProyectosPage', () => {
   let mockProyectoService: any;
   let mockClienteService: any;
   let mockUsuarioService: any;
-
+    
   beforeEach(async () => {
     // 1. Creamos los espías con los métodos que usa el componente
     mockProyectoService = jasmine.createSpyObj('ProyectoService', ['obtenerProyectos', 'crearProyecto', 'actualizarProyecto']);
