@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonMenuButton, 
-  IonButtons, IonButton, IonIcon, IonItem, IonInput, 
-  IonList, IonTextarea
+  IonButtons, IonButton, IonIcon, IonItem, IonInput, IonList, IonModal, IonTextarea 
 } from '@ionic/angular/standalone'; 
 
 import { addIcons } from 'ionicons';
@@ -19,14 +18,16 @@ import { ClienteService, Cliente } from '../services/cliente.service';
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, 
     IonButtons, IonMenuButton, IonButton, IonIcon, IonItem, 
-    IonInput, IonList, IonTextarea
+    IonInput, IonList, IonModal, IonTextarea
   ]
 })
 export class ClientesPage implements OnInit {
-  clientes: Cliente[] = [];
-  mostrandoFormulario = false;
+  clientes: Cliente[] = []; 
+  
+  isModalOpen = false;
   editando = false;
-  clienteForm: Cliente = this.resetearFormulario();
+  
+  clienteForm: any = this.resetearFormulario();
 
   private clienteService = inject(ClienteService);
 
@@ -39,48 +40,38 @@ export class ClientesPage implements OnInit {
   }
 
   obtenerClientes() {
-    this.clienteService.obtenerClientes().subscribe({
-      next: (datos) => this.clientes = datos,
-      error: (err) => console.error('Error al cargar clientes:', err)
-    });
+    this.clienteService.obtenerClientes().subscribe({ next: (d) => this.clientes = d });
   }
 
   abrirFormularioCrear() {
     this.clienteForm = this.resetearFormulario();
     this.editando = false;
-    this.mostrandoFormulario = true;
+    this.isModalOpen = true; 
   }
 
   abrirFormularioEditar(cliente: Cliente) {
     this.clienteForm = { ...cliente };
     this.editando = true;
-    this.mostrandoFormulario = true;
+    this.isModalOpen = true; 
   }
 
   cerrarFormulario() {
-    this.mostrandoFormulario = false;
+    this.isModalOpen = false;
   }
 
   resetearFormulario() {
-    return { codigo: '', nombre: '', descripcion: '' }; 
+    // AÑADIMOS LA DESCRIPCIÓN AQUÍ
+    return { nombre: '', descripcion: '' };
   }
 
   guardarCliente() {
-    if (this.editando && this.clienteForm.id) {
+    if (this.editando) {
       this.clienteService.actualizarCliente(this.clienteForm.id, this.clienteForm).subscribe({
-        next: () => {
-          this.obtenerClientes();
-          this.cerrarFormulario();
-        },
-        error: (err) => console.error('Error al actualizar cliente:', err)
+        next: () => { this.obtenerClientes(); this.cerrarFormulario(); }
       });
     } else {
       this.clienteService.crearCliente(this.clienteForm).subscribe({
-        next: () => {
-          this.obtenerClientes();
-          this.cerrarFormulario();
-        },
-        error: (err) => console.error('Error al crear cliente:', err)
+        next: () => { this.obtenerClientes(); this.cerrarFormulario(); }
       });
     }
   }
