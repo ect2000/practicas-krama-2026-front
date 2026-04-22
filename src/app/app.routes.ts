@@ -35,7 +35,8 @@ export const routes: Routes = [
   {
     path: 'proyectos',
     loadComponent: () => import('./proyectos/proyectos.page').then( m => m.ProyectosPage),
-    canActivate: [authGuard]
+    // ---> AÑADIMOS EL ADMINGUARD <---
+    canActivate: [authGuard, adminGuard] 
   },
   {
     path: 'ajustes',
@@ -45,7 +46,8 @@ export const routes: Routes = [
   {
     path: 'notificaciones',
     loadComponent: () => import('./notificaciones/notificaciones.page').then( m => m.NotificacionesPage),
-    canActivate: [authGuard]
+    // ---> AÑADIMOS EL ADMINGUARD <---
+    canActivate: [authGuard, adminGuard] 
   },
   {
     path: 'informes',
@@ -55,22 +57,18 @@ export const routes: Routes = [
   {
     path: 'clientes',
     loadComponent: () => import('./clientes/clientes.page').then( m => m.ClientesPage),
-    canActivate: [authGuard]
+    // ---> AÑADIMOS EL ADMINGUARD <---
+    canActivate: [authGuard, adminGuard] 
   },
   {
     path: 'usuarios',
     loadComponent: () => import('./usuarios/usuarios.page').then( m => m.UsuariosPage),
-    canActivate: [authGuard]
+    // ---> AÑADIMOS EL ADMINGUARD <---
+    canActivate: [authGuard, adminGuard] 
   },
   {
     path: 'cambiar-password',
     loadComponent: () => import('./cambiar-password/cambiar-password.page').then( m => m.CambiarPasswordPage),
     canActivate: [authGuard]
   },
-
-
-  
-
-  // Aquí, al usar el comando de Ionic para crear páginas,
-  // añadirá automáticamente las nuevas rutas para 'inicio', 'perfil' y 'configuracion'.
 ];

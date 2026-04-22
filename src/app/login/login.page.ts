@@ -14,11 +14,8 @@ import { AuthService } from '../services/auth.service';
 })
 export class LoginPage implements OnInit {
 
-  // Variables para guardar lo que el usuario escriba
   correo: string = '';
   contrasena: string = '';
-  
-  // NUEVO: Variable para almacenar el mensaje de error
   mensajeError: string = '';
 
   constructor(
@@ -30,13 +27,11 @@ export class LoginPage implements OnInit {
   }
 
   hacerLogin() {
-    // 1. Limpiamos cualquier error previo cada vez que se intenta iniciar sesión
     this.mensajeError = '';
 
-    // 2. Comprobamos si alguno de los campos está vacío
     if (!this.correo || this.correo.trim() === '' || !this.contrasena || this.contrasena.trim() === '') {
       this.mensajeError = 'Por favor, rellena todos los campos antes de continuar.';
-      return; // Detenemos la ejecución aquí para no hacer la petición al backend
+      return; 
     }
 
     const credenciales = {
@@ -44,18 +39,17 @@ export class LoginPage implements OnInit {
       password: this.contrasena
     };
 
-    // Llamamos a nuestro backend
     this.authService.iniciarSesion(credenciales).subscribe({
       next: (respuestaServidor) => {
-        // Guardamos los datos
+        // Guardamos el objeto usuario
         localStorage.setItem('usuarioLogueado', JSON.stringify(respuestaServidor.usuario));
-        // ¡GUARDAMOS LA PULSERA!
-        localStorage.setItem('token_krama', respuestaServidor.token); 
+        
+        // ---> CAMBIO CRUCIAL AQUÍ: Lo guardamos como 'token' <---
+        localStorage.setItem('token', respuestaServidor.token); 
         
         this.router.navigate(['/inicio']);
       },
       error: (error) => {
-        // 3. Si el backend devuelve un error (ej. contraseña incorrecta)
         console.error('Error al iniciar sesión:', error);
         this.mensajeError = 'Usuario o contraseña incorrectos. Inténtalo de nuevo.';
       }
