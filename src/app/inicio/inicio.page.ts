@@ -31,6 +31,7 @@ export class InicioPage implements OnInit {
   isModalOpen: boolean = false;
   proyectos: any[] = [];
   proyectosFiltrados: any[] = [];
+  textoBusqueda: string = '';
   
   nuevaImputacion: Imputacion = {
     proyecto: { id: 0 }, 
@@ -162,10 +163,22 @@ export class InicioPage implements OnInit {
   }
 
   buscarProyecto(event: any) {
-    const query = event.detail.value.toLowerCase();
-    this.proyectosFiltrados = this.proyectos.filter(
-      p => p.nombre.toLowerCase().indexOf(query) > -1 || p.id.toString().indexOf(query) > -1
-    );
+    // 1. Obtenemos el texto, lo pasamos a minúsculas y quitamos espacios al principio/final
+    const query = (event.detail.value || '').trim().toLowerCase();
+
+    // 2. Si el buscador está vacío, mostramos todos los proyectos
+    if (!query) {
+      this.proyectosFiltrados = [...this.proyectos];
+      return;
+    }
+
+    // 3. Filtramos previniendo errores si algún proyecto tiene el nombre o el ID nulo
+    this.proyectosFiltrados = this.proyectos.filter(p => {
+      const nombre = p.nombre ? p.nombre.toLowerCase() : '';
+      const id = p.id ? p.id.toString() : '';
+      
+      return nombre.includes(query) || id.includes(query);
+    });
   }
 
   abrirModal() {
@@ -184,10 +197,15 @@ export class InicioPage implements OnInit {
 
   cerrarModal() {
     this.isModalOpen = false;
+    
     // Resetear formulario
     this.nuevaImputacion.horas = null as any;
     this.nuevaImputacion.anotaciones = '';
     this.nuevaImputacion.proyecto.id = 0;
+    
+    // AÑADIDO: Resetear el buscador para la próxima vez que se abra
+    this.textoBusqueda = ''; 
+    this.proyectosFiltrados = [...this.proyectos]; 
   }
 
   guardarImputacion() {

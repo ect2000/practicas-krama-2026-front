@@ -100,7 +100,7 @@
         
         <ion-header class="ion-no-border">
           <ion-toolbar color="primary">
-            <ion-title class="font-bold tracking-wide">Vincular Proyecto</ion-title>
+            <ion-title class="font-bold tracking-wide ml-4">Imputar Horas</ion-title>
             <ion-buttons slot="end">
               <ion-button (click)="cerrarModal()">
                 <ion-icon name="close-outline"></ion-icon>
@@ -119,6 +119,7 @@
                   <ion-icon name="search-outline" slot="start" class="text-gray-400"></ion-icon>
                   <ion-input 
                     placeholder="Buscar proyecto por nombre..." 
+                    [(ngModel)]="textoBusqueda"
                     (ionInput)="buscarProyecto($event)">
                   </ion-input>
                 </ion-item>
