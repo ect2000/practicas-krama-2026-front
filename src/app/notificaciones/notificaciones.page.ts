@@ -5,6 +5,8 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
 import { RouterModule } from '@angular/router';
 import { ProyectoService } from '../services/proyecto.service';
 import { NotificacionService } from '../services/notificaciones.service';
+import { addIcons } from 'ionicons';
+import { notificationsOffOutline, syncOutline, checkmarkCircle, alertCircle, warning, timeOutline } from 'ionicons/icons';
 
 // Aquí están las dos importaciones necesarias que solucionan el error:
 
@@ -25,7 +27,17 @@ export class NotificacionesPage {
   constructor(
     private proyectoService: ProyectoService,
     private notificacionService: NotificacionService 
-  ) { }
+  ) { 
+    // Registramos los iconos que usamos en esta pantalla
+    addIcons({
+      'notifications-off-outline': notificationsOffOutline,
+      'sync-outline': syncOutline,
+      'checkmark-circle': checkmarkCircle,
+      'alert-circle': alertCircle,
+      'warning': warning,
+      'time-outline': timeOutline
+    });
+  }
 
   ionViewWillEnter() {
     this.verificarAjustes();
@@ -47,15 +59,33 @@ export class NotificacionesPage {
     this.cargando = true;
     this.notificaciones = []; 
     
-    // 1. Cargar las notificaciones de las imputaciones ("Usuario X ha añadido 10 h...")
-    this.notificacionService.obtenerNotificaciones().subscribe({
-      next: (notasBackend) => {
-        this.notificaciones.push(...notasBackend);
-      },
-      error: (err) => console.error('Error cargando notificaciones del server', err)
-    });
+    // 1. SOLUCIÓN: Usamos exactamente el mismo nombre que en el Login
+    const usuarioGuardado = localStorage.getItem('usuarioLogueado');
+    
+    if (usuarioGuardado) {
+      // 2. SOLUCIÓN: Como guardamos directamente el usuario, el ID está en la raíz
+      const usuarioObj = JSON.parse(usuarioGuardado);
+      const usuarioId = usuarioObj.id; 
 
-    // 2. Cargar las alertas de presupuestos
+      if (usuarioId) {
+        this.notificacionService.obtenerNotificaciones(usuarioId).subscribe({
+          next: (notasBackend) => {
+            this.notificaciones.push(...notasBackend);
+            // IMPORTANTE: Cuando termina de cargar las del servidor, quitamos el spinner
+            this.cargando = false; 
+          },
+          error: (err) => {
+            console.error('Error cargando notificaciones del server', err);
+            this.cargando = false;
+          }
+        });
+      }
+    } else {
+      console.warn("No se encontró la sesión activa del usuario.");
+      this.cargando = false;
+    }
+
+    // 3. Cargar las alertas de presupuestos (Mantenemos tu lógica actual)
     this.proyectoService.obtenerProyectos().subscribe({
       next: (proyectos) => {
         proyectos.forEach((proyecto: any) => {
@@ -82,12 +112,9 @@ export class NotificacionesPage {
             }
           }
         });
-        
-        this.cargando = false;
       },
       error: (err) => {
         console.error('Error al cargar proyectos para generar alertas', err);
-        this.cargando = false;
       }
     });
   }

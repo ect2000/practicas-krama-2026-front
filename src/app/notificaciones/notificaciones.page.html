@@ -14,7 +14,7 @@
       
       <ion-card-header class="text-center pt-8">
         <ion-card-title class="text-3xl font-extrabold text-blue-900">Avisos</ion-card-title>
-        <ion-card-subtitle class="text-blue-600 mt-2">Control de horas de proyectos</ion-card-subtitle>
+        <ion-card-subtitle class="text-blue-600 mt-2">Alertas del sistema y proyectos</ion-card-subtitle> 
       </ion-card-header>
 
       <ion-card-content class="px-4 pb-8 pt-4">
@@ -22,19 +22,19 @@
         <div *ngIf="!alertasActivas" class="text-center py-8">
           <ion-icon name="notifications-off-outline" class="text-6xl text-gray-300 mb-4"></ion-icon>
           <h2 class="text-xl font-bold text-gray-700">Alertas desactivadas</h2>
-          <p class="text-gray-500 mt-2">No recibirás avisos de presupuesto.</p>
+          <p class="text-gray-500 mt-2">No recibirás avisos del sistema.</p>
           <ion-button routerLink="/ajustes" fill="clear" class="mt-4 font-bold">Ir a Ajustes</ion-button>
         </div>
 
         <div *ngIf="alertasActivas && cargando" class="text-center py-8">
           <ion-icon name="sync-outline" class="text-6xl text-blue-300 mb-4 animate-spin"></ion-icon>
-          <p class="text-gray-500 font-semibold">Analizando proyectos...</p>
+          <p class="text-gray-500 font-semibold">Cargando notificaciones...</p>
         </div>
 
         <div *ngIf="alertasActivas && !cargando && notificaciones.length === 0" class="text-center py-8">
           <ion-icon name="checkmark-circle" class="text-6xl text-green-400 mb-4"></ion-icon>
-          <h2 class="text-xl font-bold text-gray-700">¡Todo bajo control!</h2>
-          <p class="text-gray-500 mt-2">Ningún proyecto ha superado el 80% de su presupuesto estimado.</p>
+          <h2 class="text-xl font-bold text-gray-700">¡Todo al día!</h2>
+          <p class="text-gray-500 mt-2">No tienes avisos nuevos ni alertas de presupuesto.</p> 
         </div>
 
         <ion-list *ngIf="alertasActivas && !cargando && notificaciones.length > 0" lines="full" class="bg-transparent mt-2">

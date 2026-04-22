@@ -11,7 +11,7 @@ export class NotificacionService {
 
   constructor(private http: HttpClient) { }
 
-  obtenerNotificaciones(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  obtenerNotificaciones(usuarioId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`);
   }
 }
