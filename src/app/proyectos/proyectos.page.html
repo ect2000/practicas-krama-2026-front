@@ -19,10 +19,11 @@
     </div>
 
     <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+      
       <div class="hidden md:grid grid-cols-12 gap-4 bg-gray-50 p-5 border-b border-gray-200 text-gray-500 font-bold uppercase text-xs tracking-wider">
-        <div class="col-span-2">Código</div>
-        <div class="col-span-3">Proyecto</div>
+        <div class="col-span-3">Proyecto (ID)</div>
         <div class="col-span-2 text-center">Horas Pres.</div>
+        <div class="col-span-2 text-center">Coste Total</div>
         <div class="col-span-2">Cliente</div>
         <div class="col-span-2">Encargado</div> 
         <div class="col-span-1 text-center">Acciones</div>
@@ -32,12 +33,8 @@
         @for (proyecto of proyectos; track proyecto.id) {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 p-5 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center">
             
-            <div class="col-span-1 md:col-span-2 text-indigo-600 font-bold font-mono">
-              <span class="md:hidden font-normal text-gray-400">Código (ID):</span>
-              #{{ proyecto.id }}
-            </div>
-            
-            <div class="col-span-1 md:col-span-3 font-bold text-gray-800 text-lg md:text-base">
+            <div class="col-span-1 md:col-span-3 font-bold text-gray-800 text-lg md:text-base truncate">
+              <span class="text-indigo-600 font-mono mr-1">#{{ proyecto.id }}</span>
               {{ proyecto.nombre }}
             </div>
 
@@ -46,12 +43,17 @@
               {{ proyecto.horasPresupuestadas ? proyecto.horasPresupuestadas + ' h' : 'Sin definir' }}
             </div>
 
-            <div class="col-span-1 md:col-span-2 text-gray-500">
+            <div class="col-span-1 md:col-span-2 text-center text-emerald-600 font-semibold bg-emerald-50 rounded-lg py-1">
+              <span class="md:hidden font-bold mr-1 text-gray-400">Coste:</span>
+              {{ proyecto.costeTotal ? proyecto.costeTotal + ' €' : 'Sin definir' }}
+            </div>
+
+            <div class="col-span-1 md:col-span-2 text-gray-500 truncate">
               <span class="md:hidden font-bold mr-1 text-gray-400">Cliente:</span>
               {{ proyecto.cliente?.nombre || 'Sin cliente' }}
             </div>
             
-            <div class="col-span-1 md:col-span-2 text-gray-700 italic">
+            <div class="col-span-1 md:col-span-2 text-gray-700 italic truncate">
               <span class="md:hidden font-bold mr-1 text-gray-400">Encargado:</span>
               {{ proyecto.encargado ? (proyecto.encargado.nombre + ' ' + proyecto.encargado.apellidos) : 'No asignado' }}
             </div>
@@ -122,11 +124,11 @@
   
                   <ion-item class="flex-1 border rounded-xl bg-gray-50">
                     <ion-input 
-                      label="Presupuesto Total (€)" 
+                      label="Coste Total (€)" 
                       labelPlacement="floating" 
                       type="number" 
                       min="0"
-                      [(ngModel)]="proyectoForm.presupuesto"
+                      [(ngModel)]="proyectoForm.costeTotal"
                       placeholder="Ej. 3000">
                     </ion-input>
                   </ion-item>
@@ -166,7 +168,7 @@
 
               <div class="mt-6">
                 <ion-button expand="block" shape="round" color="primary" class="font-bold h-12 px-4" (click)="guardarProyecto()">
-                  <ion-icon slot="start" name="save-outline" class="mr-2"></ion-icon>
+                  <ion-icon slot="start" name="save-outline"></ion-icon>
                   Guardar Proyecto
                 </ion-button>
               </div>
