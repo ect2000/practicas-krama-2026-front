@@ -80,8 +80,13 @@ export class AppComponent {
 
   get paginasVisibles() {
     return this.appPages.filter(pagina => {
-      // Si la página es de configuración, solo se muestra si el usuario es Admin
-      if (pagina.url === '/usuarios' || pagina.url === '/clientes' || pagina.url === '/proyectos') {
+      // Si la página es de configuración O de notificaciones, solo se muestra si el usuario es Admin
+      if (
+        pagina.url === '/usuarios' || 
+        pagina.url === '/clientes' || 
+        pagina.url === '/proyectos' || 
+        pagina.url === '/notificaciones' // <-- AÑADIDO AQUÍ
+      ) {
         return this.esAdmin;
       }
       // El resto de páginas se muestran siempre
