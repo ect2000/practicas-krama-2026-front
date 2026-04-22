@@ -12,7 +12,6 @@ export interface Proyecto {
   horasPresupuestadas?: number;
   cliente?: any; // O la interface Cliente si la tienes
   usuarios?: any[];
-  
   // ---> AÑADE ESTA LÍNEA <---
   encargado?: any; 
 }

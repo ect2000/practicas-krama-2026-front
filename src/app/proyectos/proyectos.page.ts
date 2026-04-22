@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonMenuButton, 
   IonButtons, IonButton, IonIcon, IonItem, IonInput, 
-  IonSelect, IonSelectOption, IonList, IonTextarea
+  IonSelect, IonSelectOption, IonList, IonTextarea, IonModal
 } from '@ionic/angular/standalone'; 
 
 import { addIcons } from 'ionicons';
@@ -21,14 +21,16 @@ import { UsuarioService } from '../services/usuario.service';
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, 
     IonButtons, IonMenuButton, IonButton, IonIcon, IonItem, 
-    IonInput, IonSelect, IonSelectOption, IonList, IonTextarea
+    IonInput, IonSelect, IonSelectOption, IonList, IonTextarea, IonModal
   ]
 })
 export class ProyectosPage implements OnInit {
   proyectos: Proyecto[] = []; 
   clientes: Cliente[] = [];
   usuarios: any[] = [];
-  mostrandoFormulario = false;
+  usuariosAdmin: any[] = []; // Sublista para los encargados (Solo Admins)
+
+  isModalOpen = false;
   editando = false;
   proyectoForm: any = this.resetearFormulario();
 
@@ -52,35 +54,56 @@ export class ProyectosPage implements OnInit {
   obtenerClientes() {
     this.clienteService.obtenerClientes().subscribe({ next: (d) => this.clientes = d });
   }
+
   obtenerUsuarios() {
-    this.usuarioService.obtenerUsuarios().subscribe({ next: (d) => this.usuarios = d });
+    this.usuarioService.obtenerUsuarios().subscribe({ 
+      next: (d) => { 
+        this.usuarios = d; 
+        // Filtramos para obtener solo los administradores para el campo de Encargado
+        this.usuariosAdmin = d.filter((u: any) => u.rol === 'ADMIN');
+      } 
+    });
   }
 
   abrirFormularioCrear() {
     this.proyectoForm = this.resetearFormulario();
     this.editando = false;
-    this.mostrandoFormulario = true;
+    this.isModalOpen = true;
   }
 
   abrirFormularioEditar(proyecto: any) {
     const clienteId = proyecto.cliente ? proyecto.cliente.id : null;
-    // ---> NUEVO: Extraemos el ID del encargado <---
     const encargadoId = proyecto.encargado ? proyecto.encargado.id : null; 
     const usuariosIds = proyecto.usuarios ? proyecto.usuarios.map((u: any) => u.id) : [];
     
-    // Añadimos encargadoId al objeto del formulario
-    this.proyectoForm = { ...proyecto, clienteId, encargadoId, usuariosIds }; 
+    this.proyectoForm = { 
+      ...proyecto, 
+      clienteId, 
+      encargadoId, 
+      usuariosIds,
+      horasPresupuestadas: proyecto.horasPresupuestadas || null,
+      presupuesto: proyecto.presupuesto || null
+    }; 
+    
     this.editando = true;
-    this.mostrandoFormulario = true;
+    this.isModalOpen = true;
   }
 
   cerrarFormulario() {
-    this.mostrandoFormulario = false;
+    this.isModalOpen = false;
   }
 
   resetearFormulario() {
-    // ---> NUEVO: Añadido encargadoId: null <---
-    return { nombre: '', codigo: '', descripcion: '', clienteId: null, encargadoId: null, usuariosIds: [] };
+    return { 
+      nombre: '', 
+      codigo: '', 
+      descripcion: '', 
+      clienteId: null, 
+      encargadoId: null, 
+      usuariosIds: [],
+      horasPresupuestadas: null,
+      presupuesto: null
+    };
   }
 
   guardarProyecto() {
@@ -89,8 +112,9 @@ export class ProyectosPage implements OnInit {
       nombre: this.proyectoForm.nombre,
       codigo: this.proyectoForm.codigo,
       descripcion: this.proyectoForm.descripcion,
+      horasPresupuestadas: this.proyectoForm.horasPresupuestadas, 
+      presupuesto: this.proyectoForm.presupuesto,                 
       cliente: this.proyectoForm.clienteId ? { id: this.proyectoForm.clienteId } : null,
-      // ---> NUEVO: Enviamos el encargado al Backend <---
       encargado: this.proyectoForm.encargadoId ? { id: this.proyectoForm.encargadoId } : null,
       usuarios: this.proyectoForm.usuariosIds && this.proyectoForm.usuariosIds.length > 0 
                 ? this.proyectoForm.usuariosIds.map((id: number) => ({ id: id })) 
