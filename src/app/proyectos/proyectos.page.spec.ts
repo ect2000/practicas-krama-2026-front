@@ -58,7 +58,8 @@ describe('ProyectosPage', () => {
     component.abrirFormularioCrear();
     
     expect(component.editando).toBeFalse();
-    expect(component.mostrandoFormulario).toBeTrue();
+    // CORREGIDO AQUÍ:
+    expect(component.isModalOpen).toBeTrue();
     expect(component.proyectoForm.nombre).toBe(''); // Formulario limpio
   });
 
@@ -74,7 +75,8 @@ describe('ProyectosPage', () => {
     component.abrirFormularioEditar(proyectoDelBackend);
     
     expect(component.editando).toBeTrue();
-    expect(component.mostrandoFormulario).toBeTrue();
+    // CORREGIDO AQUÍ:
+    expect(component.isModalOpen).toBeTrue();
     
     // Comprobamos que ha sacado los IDs correctamente para los Selects del HTML
     expect(component.proyectoForm.nombre).toBe('Web Krama');
@@ -97,6 +99,7 @@ describe('ProyectosPage', () => {
 
     expect(mockProyectoService.crearProyecto).toHaveBeenCalled(); // Se llamó al API POST
     expect(mockProyectoService.obtenerProyectos).toHaveBeenCalled(); // Volvió a pedir la lista para refrescar
-    expect(component.mostrandoFormulario).toBeFalse(); // Se ocultó la pantalla
+    // CORREGIDO AQUÍ:
+    expect(component.isModalOpen).toBeFalse(); // Se ocultó la pantalla
   });
 });

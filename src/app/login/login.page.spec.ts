@@ -56,13 +56,18 @@ describe('LoginPage', () => {
     // 1. Preparamos el escenario de éxito
     component.correo = 'test@correo.com';
     component.contrasena = '12345';
-    const mockUsuario = { nombre: 'Test', email: 'test@correo.com' };
+    
+    // ---> CORRECCIÓN AQUÍ: Envolvemos los datos tal y como los devuelve el backend <---
+    const mockRespuesta = { 
+      usuario: { nombre: 'Test', email: 'test@correo.com' },
+      token: 'mi-token-falso-123'
+    };
 
     // Simulamos que el localStorage funciona
     spyOn(localStorage, 'setItem'); 
     
-    // Le decimos a nuestro servicio falso que devuelva éxito (usando 'of' de rxjs)
-    mockAuthService.iniciarSesion.and.returnValue(of(mockUsuario));
+    // Le decimos a nuestro servicio falso que devuelva la respuesta con la estructura correcta
+    mockAuthService.iniciarSesion.and.returnValue(of(mockRespuesta));
 
     // 2. Ejecutamos el login
     component.hacerLogin();
@@ -71,8 +76,9 @@ describe('LoginPage', () => {
     // Comprobamos que el mensaje de error esté limpio
     expect(component.mensajeError).toBe('');
     
-    // Comprobamos que se haya guardado el usuario en localStorage
-    expect(localStorage.setItem).toHaveBeenCalledWith('usuarioLogueado', JSON.stringify(mockUsuario));
+    // ---> CORRECCIÓN AQUÍ: Comprobamos que se guarden ambas cosas correctamente <---
+    expect(localStorage.setItem).toHaveBeenCalledWith('usuarioLogueado', JSON.stringify(mockRespuesta.usuario));
+    expect(localStorage.setItem).toHaveBeenCalledWith('token', mockRespuesta.token);
     
     // Comprobamos que el router nos haya redirigido a la página de inicio
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/inicio']);
