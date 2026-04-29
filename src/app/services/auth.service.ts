@@ -19,6 +19,11 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   // Función que hace el POST hacia tu backend
+  /**
+   * Envía las credenciales de usuario al backend para iniciar sesión.
+   * @param credenciales Objeto con email y contraseña.
+   * @return Observable con la respuesta del servidor (token y datos de usuario).
+   */
   iniciarSesion(credenciales: CredencialesLogin): Observable<any> {
     return this.http.post<any>(this.apiUrl, credenciales);
   }

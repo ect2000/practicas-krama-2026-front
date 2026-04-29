@@ -48,14 +48,23 @@ export class ProyectosPage implements OnInit {
     this.obtenerUsuarios();
   }
 
+  /**
+   * Obtiene la lista de proyectos y la guarda.
+   */
   obtenerProyectos() {
     this.proyectoService.obtenerProyectos().subscribe({ next: (d) => this.proyectos = d });
   }
   
+  /**
+   * Obtiene la lista de clientes para rellenar los selectores.
+   */
   obtenerClientes() {
     this.clienteService.obtenerClientes().subscribe({ next: (d) => this.clientes = d });
   }
 
+  /**
+   * Obtiene la lista de usuarios y separa a los administradores para asignarlos como encargados.
+   */
   obtenerUsuarios() {
     this.usuarioService.obtenerUsuarios().subscribe({ 
       next: (d) => { 
@@ -65,12 +74,19 @@ export class ProyectosPage implements OnInit {
     });
   }
 
+  /**
+   * Resetea el formulario y abre el modal en modo creación.
+   */
   abrirFormularioCrear() {
     this.proyectoForm = this.resetearFormulario();
     this.editando = false;
     this.isModalOpen = true;
   }
 
+  /**
+   * Configura el formulario con los datos de un proyecto para su edición.
+   * @param proyecto Objeto con los datos a editar.
+   */
   abrirFormularioEditar(proyecto: any) {
     const clienteId = proyecto.cliente ? proyecto.cliente.id : null;
     const encargadoId = proyecto.encargado ? proyecto.encargado.id : null; 
@@ -89,10 +105,17 @@ export class ProyectosPage implements OnInit {
     this.isModalOpen = true;
   }
 
+  /**
+   * Cierra el modal de formulario.
+   */
   cerrarFormulario() {
     this.isModalOpen = false;
   }
 
+  /**
+   * Genera la estructura inicial de un formulario de proyecto.
+   * @return Objeto con los campos vacíos de proyecto.
+   */
   resetearFormulario() {
     return { 
       nombre: '', 
@@ -107,6 +130,11 @@ export class ProyectosPage implements OnInit {
   }
 
   // ---> NUEVA FUNCIÓN PARA FORMATEAR EL DINERO <---
+  /**
+   * Formatea un número como moneda (Euros).
+   * @param valor Cantidad numérica.
+   * @return String formateado (ej. "1.000 €").
+   */
   formatearMoneda(valor: any): string {
     if (valor === null || valor === undefined || valor === '') {
       return 'Sin definir';
@@ -115,6 +143,9 @@ export class ProyectosPage implements OnInit {
     return Number(valor).toLocaleString('es-ES') + ' €';
   }
 
+  /**
+   * Recoge los datos del formulario, los estructura para la API, y hace la petición de crear o actualizar.
+   */
   guardarProyecto() {
     const datosParaAPI = {
       id: this.proyectoForm.id,

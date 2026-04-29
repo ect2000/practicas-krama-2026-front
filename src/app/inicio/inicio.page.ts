@@ -57,6 +57,9 @@ export class InicioPage implements OnInit {
     this.cargarUsuarioYDatos();
   }
 
+  /**
+   * Carga los datos del usuario logueado desde el localStorage y sus imputaciones.
+   */
   cargarUsuarioYDatos() {
     const userStr = localStorage.getItem('usuarioLogueado');
     if (userStr) {
@@ -66,6 +69,9 @@ export class InicioPage implements OnInit {
     }
   }
 
+  /**
+   * Obtiene la lista completa de imputaciones del usuario desde el servidor.
+   */
   cargarImputaciones() {
     if (!this.usuarioLogueado || !this.usuarioLogueado.id) return;
     
@@ -82,10 +88,17 @@ export class InicioPage implements OnInit {
 
   // --- LÓGICA DE NAVEGACIÓN Y VISTAS ---
 
+  /**
+   * Función invocada cuando se cambia el filtro de vista (día, semana, mes).
+   */
   cambiarVista() {
     this.actualizarVista();
   }
 
+  /**
+   * Desplaza la fecha base hacia adelante o hacia atrás dependiendo de la vista actual.
+   * @param direccion 'anterior' o 'siguiente'.
+   */
   navegar(direccion: 'anterior' | 'siguiente') {
     console.log('>>> Clic detectado. Navegando hacia:', direccion);
     
@@ -106,12 +119,19 @@ export class InicioPage implements OnInit {
     console.log('>>> Nueva fecha calculada:', this.textoFecha);
   }
 
+  /**
+   * Fuerza la actualización de datos filtrados y el texto de la fecha mostrada.
+   */
   actualizarVista() {
     this.filtrarYCalcular();
     this.actualizarTextoFecha();
     this.cdr.detectChanges(); 
   }
 
+  /**
+   * Filtra las imputaciones totales para mostrar solo las que encajan en el rango de fecha.
+   * Además, recalcula la suma de horas mostradas.
+   */
   filtrarYCalcular() {
     // 1. Filtrar imputaciones
     this.imputacionesFiltradas = this.todasImputaciones.filter(imp => {
@@ -135,6 +155,9 @@ export class InicioPage implements OnInit {
     }, 0);
   }
 
+  /**
+   * Genera el texto legible para el indicador de fecha según la vista actual.
+   */
   actualizarTextoFecha() {
     const opciones: any = { weekday: 'long', day: 'numeric', month: 'short' };
     
@@ -152,6 +175,9 @@ export class InicioPage implements OnInit {
 
   // --- NUEVA LÓGICA PARA EL MODAL Y VINCULACIÓN ---
 
+  /**
+   * Carga la lista de proyectos disponibles desde el servidor para mostrarlos en el modal.
+   */
   cargarProyectos() {
     this.proyectoService.obtenerProyectos().subscribe({
       next: (data) => {
@@ -162,6 +188,10 @@ export class InicioPage implements OnInit {
     });
   }
 
+  /**
+   * Filtra la lista de proyectos mostrada en el modal basándose en el input del usuario.
+   * @param event Evento de cambio en el input de búsqueda.
+   */
   buscarProyecto(event: any) {
     // 1. Obtenemos el texto, lo pasamos a minúsculas y quitamos espacios al principio/final
     const query = (event.detail.value || '').trim().toLowerCase();
@@ -181,6 +211,9 @@ export class InicioPage implements OnInit {
     });
   }
 
+  /**
+   * Prepara los datos iniciales y abre el modal de nueva imputación.
+   */
   abrirModal() {
     // Ajustar la fecha a la vista actual
     // Extraemos la parte de la fecha (YYYY-MM-DD) corrigiendo posibles temas de zona horaria
@@ -195,6 +228,9 @@ export class InicioPage implements OnInit {
     }
   }
 
+  /**
+   * Cierra el modal y resetea su formulario de creación.
+   */
   cerrarModal() {
     this.isModalOpen = false;
     
@@ -208,6 +244,9 @@ export class InicioPage implements OnInit {
     this.proyectosFiltrados = [...this.proyectos]; 
   }
 
+  /**
+   * Valida y guarda la imputación ingresada, verificando límites de horas diarias.
+   */
   guardarImputacion() {
     if (!this.nuevaImputacion.proyecto.id || this.nuevaImputacion.proyecto.id === 0) {
       alert('Por favor, selecciona un proyecto.');

@@ -26,6 +26,10 @@ export class LoginPage implements OnInit {
   ngOnInit() {
   }
 
+  /**
+   * Intenta autenticar al usuario usando las credenciales proporcionadas.
+   * Si es exitoso, guarda los datos en localStorage y redirige al inicio.
+   */
   hacerLogin() {
     this.mensajeError = '';
 

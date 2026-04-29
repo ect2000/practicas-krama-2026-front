@@ -11,6 +11,11 @@ export class NotificacionService {
 
   constructor(private http: HttpClient) { }
 
+  /**
+   * Obtiene las notificaciones dirigidas a un usuario específico.
+   * @param usuarioId ID del usuario destino.
+   * @return Observable con la lista de notificaciones del usuario.
+   */
   obtenerNotificaciones(usuarioId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`);
   }
