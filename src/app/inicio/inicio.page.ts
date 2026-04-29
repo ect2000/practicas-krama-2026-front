@@ -219,6 +219,30 @@ export class InicioPage implements OnInit {
       return;
     }
 
+    // --- INICIO NUEVA VALIDACIÓN DE 24 HORAS ---
+    // Parseamos la fecha que el usuario ha seleccionado en el modal
+    const fechaSeleccionada = this.parsearFecha(this.nuevaImputacion.fecha);
+    
+    // Calculamos cuántas horas ya tiene imputadas en ese día exacto
+    const horasYaImputadasEseDia = this.todasImputaciones
+      .filter(imp => {
+        const fechaImp = this.parsearFecha(imp.fecha);
+        return this.esMismoDia(fechaImp, fechaSeleccionada);
+      })
+      .reduce((sum, imp) => {
+        const h = Number(imp.horas);
+        return sum + (isNaN(h) ? 0 : h);
+      }, 0);
+
+    const horasAImputar = Number(this.nuevaImputacion.horas);
+
+    // Comprobamos si la suma supera las 24 horas
+    if ((horasYaImputadasEseDia + horasAImputar) > 24) {
+      alert(`No puedes imputar más de 24 horas en un mismo día. Ya tienes ${horasYaImputadasEseDia} horas registradas para esta fecha.`);
+      return; // Detenemos la ejecución para que no se guarde
+    }
+    // --- FIN NUEVA VALIDACIÓN DE 24 HORAS ---
+
     this.imputacionService.crearImputacion(this.nuevaImputacion).subscribe({
       next: () => {
         alert('¡Horas registradas con éxito!');
