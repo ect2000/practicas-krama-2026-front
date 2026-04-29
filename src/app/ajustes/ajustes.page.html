@@ -39,7 +39,7 @@
             <ion-label color="primary" class="font-bold text-base tracking-wider">SEGURIDAD</ion-label>
           </ion-item-divider>
 
-          <ion-item button routerLink="/cambiar-password" class="rounded-xl transition-all mb-2" detail="true">
+          <ion-item button (click)="abrirModalPassword()" class="rounded-xl transition-all mb-2" detail="true">
             <ion-icon slot="start" name="shield-checkmark-outline" class="mr-2 text-xl" color="primary"></ion-icon>
             <ion-label>
               <h2 class="font-semibold">Cambiar contraseña</h2>
@@ -75,5 +75,68 @@
       </ion-list>
     </ion-card-content>
   </ion-card>
+
+  <ion-modal [isOpen]="mostrandoModalPassword" (willDismiss)="cerrarModalPassword()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title class="ml-2">Cambiar Contraseña</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalPassword()">Cancelar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content class="ion-padding bg-gray-50">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-10 mt-4">
+          
+          <div class="flex flex-col gap-5 mt-2">
+            <div class="bg-gray-50 rounded-2xl border border-gray-200 px-4 py-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all">
+              <ion-input
+                label="Nueva contraseña"
+                labelPlacement="floating"
+                placeholder="Escribe la nueva contraseña"
+                class="text-gray-800 font-medium"
+                type="password"
+                [(ngModel)]="nuevaPassword">
+                <ion-icon slot="start" name="lock-open-outline" class="text-gray-400 mr-2 mt-2"></ion-icon>
+              </ion-input>
+            </div>
+
+            <div class="bg-gray-50 rounded-2xl border border-gray-200 px-4 py-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all">
+              <ion-input
+                label="Repetir contraseña"
+                labelPlacement="floating"
+                placeholder="Vuelve a escribirla"
+                class="text-gray-800 font-medium"
+                type="password"
+                [(ngModel)]="repetirPassword">
+                <ion-icon slot="start" name="lock-closed-outline" class="text-gray-400 mr-2 mt-2"></ion-icon>
+              </ion-input>
+            </div>
+
+            <div class="text-center mt-2">
+              <ion-text color="danger" *ngIf="mensajeError">
+                <p class="font-bold">{{ mensajeError }}</p>
+              </ion-text>
+              <ion-text color="success" *ngIf="mensajeExito">
+                <p class="font-bold">{{ mensajeExito }}</p>
+              </ion-text>
+            </div>
+
+            <ion-button
+              expand="block"
+              shape="round"
+              class="font-bold h-12 px-4"
+              color="primary"
+              (click)="guardarContrasena()">
+              Actualizar Contraseña
+            </ion-button>
+          </div>
+
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
