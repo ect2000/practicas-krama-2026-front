@@ -1,9 +1,9 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
-// FÍJATE EN ESTE 'export' DE AQUÍ ABAJO:
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   
-  const token = localStorage.getItem('token_krama');
+  // SOLUCIÓN: Cambiamos 'token_krama' por 'token' para que coincida con tu memoria
+  const token = localStorage.getItem('token');
 
   if (token) {
     const peticionClonada = req.clone({
