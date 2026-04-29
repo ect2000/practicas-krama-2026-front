@@ -181,8 +181,28 @@ export class InicioPage implements OnInit {
   cargarProyectos() {
     this.proyectoService.obtenerProyectos().subscribe({
       next: (data) => {
-        this.proyectos = data;
-        this.proyectosFiltrados = data;
+        // Verificamos que tenemos la información del usuario conectado
+        if (this.usuarioLogueado && this.usuarioLogueado.id) {
+          const miId = this.usuarioLogueado.id;
+          
+          // Filtramos la lista de proyectos que llegó del servidor
+          this.proyectos = data.filter(proyecto => {
+            // 1. Comprobamos si nuestro ID está dentro de la lista de usuarios del proyecto
+            const soyUsuarioDelProyecto = proyecto.usuarios?.some((u: any) => u.id === miId);
+            
+            // 2. (Opcional pero recomendado) Comprobamos si somos el encargado del proyecto
+            const soyEncargadoDelProyecto = proyecto.encargado?.id === miId;
+            
+            // Si cumplimos alguna de las dos condiciones, conservamos el proyecto en la lista
+            return soyUsuarioDelProyecto || soyEncargadoDelProyecto;
+          });
+        } else {
+          // Si por algún error no detectamos al usuario logueado, dejamos la lista vacía por seguridad
+          this.proyectos = [];
+        }
+        
+        // Actualizamos la lista filtrada que es la que se muestra en la pantalla
+        this.proyectosFiltrados = [...this.proyectos];
       },
       error: (error) => console.error('Error al cargar proyectos:', error)
     });
