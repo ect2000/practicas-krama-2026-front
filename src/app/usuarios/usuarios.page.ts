@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonMenuButton, 
   IonButtons, IonButton, IonIcon, IonItem, IonLabel, IonInput, 
-  IonSelect, IonSelectOption, IonList 
+  IonSelect, IonSelectOption, IonList, IonModal // <-- AÑADIDO IonModal
 } from '@ionic/angular/standalone'; 
 
 import { addIcons } from 'ionicons';
@@ -22,7 +22,7 @@ import { ProyectoService, Proyecto } from '../services/proyecto.service';
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, 
     IonButtons, IonMenuButton, IonButton, IonIcon, IonItem, IonLabel, 
-    IonInput, IonSelect, IonSelectOption, IonList
+    IonInput, IonSelect, IonSelectOption, IonList, IonModal // <-- AÑADIDO IonModal
   ]
 })
 export class UsuariosPage implements OnInit {
@@ -65,7 +65,6 @@ export class UsuariosPage implements OnInit {
   }
 
   abrirFormularioEditar(usuario: any) {
-    // Extraemos los IDs de los MÚLTIPLES clientes y proyectos
     const clientesIds = usuario.clientes ? usuario.clientes.map((c: any) => c.id) : [];
     const proyectosIds = usuario.proyectos ? usuario.proyectos.map((p: any) => p.id) : [];
 
@@ -82,12 +81,10 @@ export class UsuariosPage implements OnInit {
     return { nombre: '', apellidos: '', email: '', telefono: '', rol: '', clientesIds: [], proyectosIds: [] };
   }
 
-  // ---> 1. EL GETTER (Filtro Inteligente en tiempo real) <---
   get proyectosFiltrados() {
     if (!this.usuarioForm.clientesIds || this.usuarioForm.clientesIds.length === 0) {
       return []; 
     }
-    
     return this.proyectos.filter(proyecto => {
       if (proyecto.cliente && proyecto.cliente.id) {
         return this.usuarioForm.clientesIds.includes(proyecto.cliente.id);
@@ -96,10 +93,8 @@ export class UsuariosPage implements OnInit {
     });
   }
 
-  // ---> 2. FUNCIÓN DE LIMPIEZA AUTOMÁTICA <---
   onClientesCambian() {
     if (this.usuarioForm.proyectosIds && this.usuarioForm.proyectosIds.length > 0) {
-      // Dejamos solo los IDs de los proyectos que sigan siendo válidos
       const idsValidos = this.proyectosFiltrados.map(p => p.id);
       this.usuarioForm.proyectosIds = this.usuarioForm.proyectosIds.filter((id: number) => 
         idsValidos.includes(id)
