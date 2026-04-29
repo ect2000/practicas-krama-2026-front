@@ -29,6 +29,7 @@ export class InformesPage implements OnInit {
   // --- NUEVAS VARIABLES PARA EL INFORME 1 ---
   usuariosParaFiltro: any[] = [];
   proyectosParaFiltro: any[] = [];
+  todosLosProyectos: any[] = []; // Guardará la lista original de proyectos
   usuariosSeleccionados: number[] = [];
   proyectosSeleccionados: number[] = [];
 
@@ -80,9 +81,51 @@ export class InformesPage implements OnInit {
 
   cargarFiltros() {
     this.usuarioService.obtenerUsuarios().subscribe({ next: (data) => this.usuariosParaFiltro = data });
-    this.proyectoService.obtenerProyectos().subscribe({ next: (data) => this.proyectosParaFiltro = data });
-    // ---> AÑADE ESTA LÍNEA <---
+    
+    // Guardamos los proyectos en dos variables: la original y la que se va a filtrar
+    this.proyectoService.obtenerProyectos().subscribe({ 
+      next: (data) => {
+        this.todosLosProyectos = data;
+        this.proyectosParaFiltro = data; 
+      } 
+    });
+    
     this.clienteService.obtenerClientes().subscribe({ next: (data) => this.clientesParaFiltro = data });
+  }
+
+ filtrarProyectosPorUsuario() {
+    // Si no hay usuarios seleccionados, volvemos a mostrar todos los proyectos
+    if (!this.usuariosSeleccionados || this.usuariosSeleccionados.length === 0) {
+      this.proyectosParaFiltro = [...this.todosLosProyectos];
+      return;
+    }
+
+    // Transformamos todos los IDs a números de forma segura por si Ionic los manda como texto
+    const idsSeleccionadosSeguros = this.usuariosSeleccionados.map(id => Number(id));
+
+    this.proyectosParaFiltro = this.todosLosProyectos.filter(proyecto => {
+      let esEncargado = false;
+      let esParticipante = false;
+
+      // Comprobamos si es encargado (forzando a número)
+      if (proyecto.encargado && proyecto.encargado.id) {
+        esEncargado = idsSeleccionadosSeguros.includes(Number(proyecto.encargado.id));
+      }
+      
+      // Comprobamos si está en la lista de usuarios (forzando a número)
+      if (proyecto.usuarios && Array.isArray(proyecto.usuarios)) {
+        esParticipante = proyecto.usuarios.some((u: any) => 
+          idsSeleccionadosSeguros.includes(Number(u.id))
+        );
+      }
+
+      return esEncargado || esParticipante;
+    });
+
+    // Limpiamos los proyectos que estuvieran seleccionados pero ya no coincidan con el filtro
+    this.proyectosSeleccionados = this.proyectosSeleccionados.filter(idProyecto => 
+      this.proyectosParaFiltro.some(p => Number(p.id) === Number(idProyecto))
+    );
   }
 
   generarInforme1() {

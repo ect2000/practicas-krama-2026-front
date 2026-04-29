@@ -36,7 +36,7 @@
         </ion-item>
         
         <div class="ion-padding" slot="content">
-          <ion-select label="Usuarios" label-placement="floating" fill="outline" multiple="true" [(ngModel)]="usuariosSeleccionados" class="ion-margin-bottom">
+          <ion-select label="Usuarios" label-placement="floating" fill="outline" multiple="true" [(ngModel)]="usuariosSeleccionados" (ionChange)="filtrarProyectosPorUsuario()" class="ion-margin-bottom">
             <ion-select-option *ngFor="let u of usuariosParaFiltro" [value]="u.id">
               {{u.nombre}} {{u.apellidos}}
             </ion-select-option>
