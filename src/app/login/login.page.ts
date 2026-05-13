@@ -59,8 +59,10 @@ export class LoginPage implements OnInit {
             const datosUsuario = {
               id: respuestaServidor.usuario.id,
               nombre: respuestaServidor.usuario.nombre,
+              apellidos: respuestaServidor.usuario.apellidos, // ¡Añadimos los apellidos!
               rol: respuestaServidor.usuario.rol,
-              email: respuestaServidor.usuario.email
+              email: respuestaServidor.usuario.email,
+              telefono: respuestaServidor.usuario.telefono  // ¡Añadimos el teléfono!
             };
             
             localStorage.setItem('usuarioLogueado', JSON.stringify(datosUsuario));
