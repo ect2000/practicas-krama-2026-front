@@ -43,19 +43,42 @@ export class LoginPage implements OnInit {
       password: this.contrasena
     };
 
+    // src/app/login/login.page.ts
+
     this.authService.iniciarSesion(credenciales).subscribe({
       next: (respuestaServidor) => {
-        // Guardamos el objeto usuario
-        localStorage.setItem('usuarioLogueado', JSON.stringify(respuestaServidor.usuario));
-        
-        // ---> CAMBIO CRUCIAL AQUÍ: Lo guardamos como 'token' <---
-        localStorage.setItem('token', respuestaServidor.token); 
-        
-        this.router.navigate(['/inicio']);
+        console.log('Respuesta completa del servidor:', respuestaServidor);
+
+        try {
+          if (respuestaServidor && respuestaServidor.token) {
+            // Guardamos el token primero (es lo más importante)
+            localStorage.setItem('token', respuestaServidor.token);
+            
+            // Guardamos el usuario. Si da error por referencias circulares,
+            // guardamos solo los datos básicos para que no falle.
+            const datosUsuario = {
+              id: respuestaServidor.usuario.id,
+              nombre: respuestaServidor.usuario.nombre,
+              rol: respuestaServidor.usuario.rol,
+              email: respuestaServidor.usuario.email
+            };
+            
+            localStorage.setItem('usuarioLogueado', JSON.stringify(datosUsuario));
+            console.log('Datos guardados correctamente, navegando...');
+            
+            // Navegamos a la ruta de inicio
+            this.router.navigate(['/inicio']);
+          } else {
+            this.mensajeError = 'Respuesta del servidor incompleta.';
+          }
+        } catch (e) {
+          console.error('Error al procesar los datos de sesión:', e);
+          this.mensajeError = 'Error interno al iniciar sesión.';
+        }
       },
       error: (error) => {
-        console.error('Error al iniciar sesión:', error);
-        this.mensajeError = 'Usuario o contraseña incorrectos. Inténtalo de nuevo.';
+        console.error('Error de red o credenciales:', error);
+        this.mensajeError = 'Usuario o contraseña incorrectos.';
       }
     });
   }
