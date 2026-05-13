@@ -8,7 +8,8 @@ export const environment = {
   // URL de tu backend Spring Boot local. 
   // Recuerda: si vas a usar el emulador de Android, cambia 'localhost' por '10.0.2.2'
   // Si vas a usar un móvil físico, pon la IP de tu ordenador en la red WiFi (ej. '192.168.1.X')
-  apiUrl: 'http://10.0.2.2:8080' 
+  //apiUrl: 'http://10.0.2.2:8080' 
+  apiUrl: 'http://localhost:8080'
 };
 
 /*
